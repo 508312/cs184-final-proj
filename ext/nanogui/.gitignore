@@ -13,7 +13,6 @@ CMakeFiles
 build.ninja
 rules.ninja
 Makefile
-bin2c
 example[1-9]
 example_icons
 icons
