@@ -8,6 +8,8 @@ set(CLOTHSIM_VIEWER_SOURCE
     # Camera
     camera.cpp
 
+    WorldSim.cpp
+
     misc/file_utils.cpp
 )
 
