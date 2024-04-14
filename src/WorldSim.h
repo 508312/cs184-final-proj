@@ -14,7 +14,7 @@ public:
 
 	void init();
 
-	virtual bool isAlive();
+	virtual bool isAlive() { return is_alive; }
 	virtual void drawContents();
 
 	// Screen events
@@ -29,11 +29,14 @@ public:
 private:
 	virtual void initGUI(Screen* screen);
 
+	GLShader shader;
+
+	void initShader();
+
 	// File management
 	std::string m_project_root;
 
 	// Camera methods
-	virtual void resetCamera();
 	virtual Matrix4f getProjectionMatrix();
 	virtual Matrix4f getViewMatrix();
 

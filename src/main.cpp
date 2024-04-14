@@ -15,6 +15,7 @@
 #include "CGL/CGL.h"
 #include "json.hpp"
 #include "misc/file_utils.h"
+#include "WorldSim.h"
 
 typedef uint32_t gid_t;
 
@@ -23,6 +24,7 @@ using namespace nanogui;
 
 using json = nlohmann::json;
 
+WorldSim* app = nullptr;
 GLFWwindow *window = nullptr;
 Screen *screen = nullptr;
 
@@ -217,6 +219,9 @@ int main(int argc, char **argv) {
   screen->setVisible(true);
   screen->performLayout();
 
+  app = new WorldSim(project_root, screen);
+  app->init();
+
   // Attach callbacks to the GLFW window
 
   setGLFWCallbacks();
@@ -227,9 +232,10 @@ int main(int argc, char **argv) {
     glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    app->drawContents();
     // Draw nanogui
-    screen->drawContents();
-    screen->drawWidgets();
+    //screen->drawContents();
+    //screen->drawWidgets();
 
     glfwSwapBuffers(window);
 
