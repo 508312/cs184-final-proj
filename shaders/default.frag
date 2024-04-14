@@ -8,6 +8,6 @@ in vec2 in_uv;
 out vec4 out_color;
 
 void main() {
-  out_color = vec4(0.7f, 0.4f, 0.1f, 1.0f);
+  out_color = in_normal;
 }
 
