@@ -34,7 +34,7 @@ private:
 	void initShader();
 
 	// File management
-	std::string m_project_root;
+	std::string project_root;
 
 	// Camera methods
 	virtual Matrix4f getProjectionMatrix();

@@ -16,6 +16,7 @@
 
 WorldSim::WorldSim(std::string project_root, Screen* screen) {
 	this->screen = screen;
+    this->project_root = project_root;
 
 	glEnable(GL_PROGRAM_POINT_SIZE);
 	glEnable(GL_DEPTH_TEST);
@@ -67,7 +68,7 @@ void WorldSim::init() {
 }
 
 void WorldSim::initShader() {
-    shader.initFromFiles("default", "../../../shaders/default.vert", "../../../shaders/default.frag");
+    shader.initFromFiles("default", project_root + "\\shaders\\default.vert", project_root + "\\shaders\\default.frag");
 }
 
 
@@ -276,7 +277,7 @@ void WorldSim::drawContents() {
     MatrixXf positions(4, num_tris * 3);
     MatrixXf normals(4, num_tris * 3);
 
-    positions.col(0 * 3) << 1.0, 1.0, 0.0, 1.0;
+    positions.col(0 * 3) << 1.0, 1.0, 1.0, 1.0;
     positions.col(0 * 3 + 1) << 0.0, 1.0, 0.0, 1.0;
     positions.col(0 * 3 + 2) << 1.0, 0.0, 0.0, 1.0;
 

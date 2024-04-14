@@ -146,7 +146,12 @@ void incompleteObjectError(const char *object, const char *attribute) {
 }
 
 bool is_valid_project_root(const std::string& search_path) {
-    return true;
+    std::stringstream ss;
+    ss << search_path;
+    ss << "/";
+    ss << "shaders/Default.vert";
+
+    return FileUtils::file_exists(ss.str());
 }
 
 // Attempt to locate the project root automatically
