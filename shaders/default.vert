@@ -34,7 +34,7 @@ void main() {
   // per-vertex properties. That way, when the fragment shader reads
   // them, we already have the position in world-space.
   //v_position = u_model * in_position;
-  //v_normal = normalize(u_model * in_normal);
+  v_normal = normalize(u_model * in_normal);
   //v_uv = in_uv;
   //v_tangent = normalize(u_model * in_tangent);
   

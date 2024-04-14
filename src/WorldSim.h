@@ -5,6 +5,8 @@
 #include <memory>
 
 #include "camera.h"
+#include "cubeFaceEnum.h"
+
 using namespace nanogui;
 
 class WorldSim {
@@ -25,6 +27,9 @@ public:
 	virtual bool dropCallbackEvent(int count, const char** filenames);
 	virtual bool scrollCallbackEvent(double x, double y);
 	virtual bool resizeCallbackEvent(int width, int height);
+
+	void pushCube(MatrixXf& positions, MatrixXf& normals, float x, float y, float z);
+	void pushFace(MatrixXf& positions, MatrixXf& normals, int idx, float x, float y, float z, CUBE_FACE face);
 
 private:
 	virtual void initGUI(Screen* screen);

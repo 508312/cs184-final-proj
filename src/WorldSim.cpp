@@ -9,6 +9,7 @@
 #include "misc/file_utils.h"
 
 #include "WorldSim.h"
+#include "cubeFaceEnum.h"
 
 // Needed to generate stb_image binaries. Should only define in exactly one source file importing stb_image.h.
 #define STB_IMAGE_IMPLEMENTATION
@@ -258,6 +259,129 @@ void WorldSim::initGUI(Screen* screen) {
     }
 }
 
+void WorldSim::pushFace(MatrixXf& positions, MatrixXf& normals, int idx,
+                                        float x, float y, float z,
+                                        CUBE_FACE face) {
+    float dx = 0.0;
+    float dy = 0.0;
+    float dz = 0.0;
+    float dc = 0.0;
+
+    float nx = 0.0;
+    float ny = 0.0;
+    float nz = 0.0;
+
+    switch (face) {
+        case BOT:
+            // y is constant
+            // dx dz are variables
+            dx = 1;
+            dy = 0;
+            dc = 0;
+            dz = -1;
+            
+            // set correct normal
+            ny = -1;
+            break;
+        case TOP:
+            // y is constant
+            // dx dz change
+            y += 1;
+            dx = 1;
+            dy = 0;
+            dc = 0;
+            dz = -1;
+
+            // set correct normal
+            ny = 1.0;
+            break;
+        case LEFT:
+            // x is constant
+            // dy dz change
+            dx = 0;
+            dy = 0;
+            dc = 1;
+            dz = -1;
+
+            // set correct normal
+            nx = -1.0;
+            break;
+        case RIGHT:
+            // x is constant
+            // dy dz change
+            x += 1.0;
+            dx = 0;
+            dy = 0;
+            dc = 1;
+            dz = -1;
+            
+            // set correct normal
+            nx = 1.0;
+            break;
+        case FORWARD:
+            // z is constant
+            // dx dy change
+            dx = 1;
+            dy = 1;
+            dc = 0;
+            dz = 0;
+
+            // set correct normal
+            nz = 1.0;
+            break;
+        case BACKWARD:
+            // z is constant
+            // dx dy change
+            z -= 1.0;
+            dx = 1;
+            dy = 1;
+            dc = 0;
+            dz = 0;
+
+            // set correct normal
+            nz = -1.0;
+            break;
+        default:
+            std::cout << "SOMETHING WENT WRONG" << std::endl;
+    }
+    
+    // bottom left corner
+    positions.col(idx * 3) << x, y, z, 1.0;
+
+    //  top left corner
+    positions.col(idx * 3 + 1) << x + dx, y + dc, z, 1.0;
+
+    // bottom right corner
+    positions.col(idx * 3 + 2) << x, y + dy, z + dz, 1.0;
+    
+    // top right corner
+    positions.col((idx+1) * 3) << x + dx, y + dc, z, 1.0;
+    
+    // top left corner
+    positions.col((idx+1) * 3 + 1) << x, y + dy, z + dz, 1.0;
+    
+    // dy + dc can't be 2, dy + dc <= 1
+    // top right corner
+    positions.col((idx+1) * 3 + 2) << x + dx, y + dy + dc, z + dz, 1.0;
+
+    normals.col(idx * 3) << nx, ny, nz, 0.0;
+    normals.col(idx * 3 + 1) << nx, ny, nz, 0.0;
+    normals.col(idx * 3 + 2) << nx, ny, nz, 0.0;
+    normals.col((idx + 1) * 3) << nx, ny, nz, 0.0;
+    normals.col((idx + 1) * 3 + 1) << nx, ny, nz, 0.0;
+    normals.col((idx + 1) * 3 + 2) << nx, ny, nz, 0.0;
+}
+
+inline void WorldSim::pushCube(MatrixXf& positions, MatrixXf& normals, 
+                                    float x, float y, float z) {
+    pushFace(positions, normals, 0, x, y, z, LEFT);
+    pushFace(positions, normals, 2, x, y, z, BOT);
+    pushFace(positions, normals, 4, x, y, z, FORWARD);
+    pushFace(positions, normals, 6, x, y, z, TOP);
+    pushFace(positions, normals, 8, x, y, z, RIGHT);
+    pushFace(positions, normals, 10, x, y, z, BACKWARD);
+}
+
 void WorldSim::drawContents() {
     glEnable(GL_DEPTH_TEST);
     shader.bind();
@@ -272,26 +396,12 @@ void WorldSim::drawContents() {
     shader.setUniform("u_model", model);
     shader.setUniform("u_view_projection", viewProjection);
 
-    int num_tris = 2;
+    int num_tris = 12;
 
     MatrixXf positions(4, num_tris * 3);
     MatrixXf normals(4, num_tris * 3);
 
-    positions.col(0 * 3) << 1.0, 1.0, 1.0, 1.0;
-    positions.col(0 * 3 + 1) << 0.0, 1.0, 0.0, 1.0;
-    positions.col(0 * 3 + 2) << 1.0, 0.0, 0.0, 1.0;
-
-    normals.col(0 * 3) << 0.5, 0.0, 1.0, 0.0;
-    normals.col(0 * 3 + 1) << 0.0, 0.0, 1.0, 0.0;
-    normals.col(0 * 3 + 2) << 0.0, 0.0, 1.0, 0.0;
-
-    positions.col(1 * 3) << 1.0, 0.0, 0.0, 1.0;
-    positions.col(1 * 3 + 1) << 0.0, 0.0, 0.0, 1.0;
-    positions.col(1 * 3 + 2) << 0.0, 1.0, 0.0, 1.0;
-
-    normals.col(1 * 3) << 0.0, 1.0, 0.0, 0.0;
-    normals.col(1 * 3 + 1) << 0.0, 1.0, 0.0, 0.0;
-    normals.col(1 * 3 + 2) << 0.0, 1.0, 0.0, 0.0;
+    pushCube(positions, normals, 0, 0, 0);
 
     shader.uploadAttrib("in_position", positions, false);
     shader.uploadAttrib("in_normal", normals, false);
