@@ -39,7 +39,11 @@ void WorldSim::init() {
     camera_info.nClip = 0.01;
     camera_info.fClip = 10000;
 
-    canonical_view_distance = 1.0f * 0.9;
+    CGL::Vector3D target(0, 0, 0);
+
+    CGL::Vector3D c_dir(0., 0., 0.);
+
+    canonical_view_distance = 2.0f * 0.9;
     scroll_rate = canonical_view_distance / 10;
 
     view_distance = canonical_view_distance * 2;
@@ -48,9 +52,9 @@ void WorldSim::init() {
 
     // canonicalCamera is a copy used for view resets
 
-    camera.place(0.0f, 0, 0, view_distance,
+    camera.place(target, acos(c_dir.y), atan2(c_dir.x, c_dir.z), view_distance,
         min_view_distance, max_view_distance);
-    canonicalCamera.place(0.0f, 0, 0,
+    canonicalCamera.place(target, acos(c_dir.y), atan2(c_dir.x, c_dir.z),
         view_distance, min_view_distance, max_view_distance);
 
     screen_w = default_window_size(0);
@@ -276,7 +280,7 @@ void WorldSim::drawContents() {
     positions.col(0 * 3 + 1) << 0.0, 1.0, 0.0, 1.0;
     positions.col(0 * 3 + 2) << 1.0, 0.0, 0.0, 1.0;
 
-    normals.col(0 * 3) << 0.0, 0.0, 1.0, 0.0;
+    normals.col(0 * 3) << 0.5, 0.0, 1.0, 0.0;
     normals.col(0 * 3 + 1) << 0.0, 0.0, 1.0, 0.0;
     normals.col(0 * 3 + 2) << 0.0, 0.0, 1.0, 0.0;
 

@@ -82,48 +82,49 @@ void createGLContexts() {
 }
 
 void setGLFWCallbacks() {
-  glfwSetCursorPosCallback(window, [](GLFWwindow *, double x, double y) {
-    if (!screen->cursorPosCallbackEvent(x, y)) {
-      
-    }
-  });
-
-  glfwSetMouseButtonCallback(
-      window, [](GLFWwindow *, int button, int action, int modifiers) {
-        if (!screen->mouseButtonCallbackEvent(button, action, modifiers) ||
-            action == GLFW_RELEASE) {
-          
+    glfwSetCursorPosCallback(window, [](GLFWwindow*, double x, double y) {
+        if (!screen->cursorPosCallbackEvent(x, y)) {
+            app->cursorPosCallbackEvent(x / screen->pixelRatio(),
+                y / screen->pixelRatio());
         }
-      });
+        });
 
-  glfwSetKeyCallback(
-      window, [](GLFWwindow *, int key, int scancode, int action, int mods) {
-        if (!screen->keyCallbackEvent(key, scancode, action, mods)) {
-          
+    glfwSetMouseButtonCallback(
+        window, [](GLFWwindow*, int button, int action, int modifiers) {
+            if (!screen->mouseButtonCallbackEvent(button, action, modifiers) ||
+                action == GLFW_RELEASE) {
+                app->mouseButtonCallbackEvent(button, action, modifiers);
+            }
+        });
+
+    glfwSetKeyCallback(
+        window, [](GLFWwindow*, int key, int scancode, int action, int mods) {
+            if (!screen->keyCallbackEvent(key, scancode, action, mods)) {
+                app->keyCallbackEvent(key, scancode, action, mods);
+            }
+        });
+
+    glfwSetCharCallback(window, [](GLFWwindow*, unsigned int codepoint) {
+        screen->charCallbackEvent(codepoint);
+        });
+
+    glfwSetDropCallback(window,
+        [](GLFWwindow*, int count, const char** filenames) {
+            screen->dropCallbackEvent(count, filenames);
+            app->dropCallbackEvent(count, filenames);
+        });
+
+    glfwSetScrollCallback(window, [](GLFWwindow*, double x, double y) {
+        if (!screen->scrollCallbackEvent(x, y)) {
+            app->scrollCallbackEvent(x, y);
         }
-      });
+        });
 
-  glfwSetCharCallback(window, [](GLFWwindow *, unsigned int codepoint) {
-    screen->charCallbackEvent(codepoint);
-  });
-
-  glfwSetDropCallback(window,
-                      [](GLFWwindow *, int count, const char **filenames) {
-                        screen->dropCallbackEvent(count, filenames);
-                        
-                      });
-
-  glfwSetScrollCallback(window, [](GLFWwindow *, double x, double y) {
-    if (!screen->scrollCallbackEvent(x, y)) {
-      
-    }
-  });
-
-  glfwSetFramebufferSizeCallback(window,
-                                 [](GLFWwindow *, int width, int height) {
-                                   screen->resizeCallbackEvent(width, height);
-                                   
-                                 });
+    glfwSetFramebufferSizeCallback(window,
+        [](GLFWwindow*, int width, int height) {
+            screen->resizeCallbackEvent(width, height);
+            app->resizeCallbackEvent(width, height);
+        });
 }
 
 void usageError(const char *binaryName) {
