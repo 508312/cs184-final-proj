@@ -10,6 +10,10 @@ set(CLOTHSIM_VIEWER_SOURCE
 
     WorldSim.cpp
 
+    chunk.cpp
+    cell_funcs.cpp
+
+
     misc/file_utils.cpp
 )
 

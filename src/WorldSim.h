@@ -6,6 +6,7 @@
 
 #include "camera.h"
 #include "cubeFaceEnum.h"
+#include "chunk.h"
 
 using namespace nanogui;
 
@@ -35,6 +36,8 @@ private:
 	virtual void initGUI(Screen* screen);
 
 	GLShader shader;
+
+	Chunk* tmp_chunk;
 
 	void initShader();
 

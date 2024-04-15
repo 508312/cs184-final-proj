@@ -66,6 +66,8 @@ void WorldSim::init() {
     canonicalCamera.configure(camera_info, screen_w, screen_h);
 
     initShader();
+
+    tmp_chunk = new Chunk();
 }
 
 void WorldSim::initShader() {

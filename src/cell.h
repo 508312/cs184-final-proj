@@ -1,6 +1,9 @@
 #ifndef CELL_H
 #define CELL_H
 
+#include <stdint.h>
+#include "cell_types.h"
+#include "properties.h"
 
 struct color {
 	uint8_t r;
@@ -10,10 +13,10 @@ struct color {
 };
 
 struct cell {
-	color clr,
-	CellType type,
+	color clr;
+	CellType type;
 	// arbitrary attribute if we need it. For example duration left on flame(it starts with 10, and ticks down every tick, upon reaching 0 it extinguishes)
-	attrib_t attribute,
+	//attrubute attr,
 };
 
 #endif
