@@ -204,7 +204,10 @@ bool WorldSim::keyCallbackEvent(int key, int scancode, int action,
             is_alive = false;
             break;
         case 'r':
+            tmp_chunk->update();
+            break;
         case 'R':
+            tmp_chunk->update();
             break;
         case ' ':
             //resetCamera();
@@ -261,9 +264,12 @@ void WorldSim::initGUI(Screen* screen) {
     }
 }
 
-void WorldSim::pushFace(MatrixXf& positions, MatrixXf& normals, int idx,
+void WorldSim::pushFace(MatrixXf& positions, MatrixXf& normals,
                                         float x, float y, float z,
                                         CUBE_FACE face) {
+    positions.conservativeResize(Eigen::NoChange, positions.cols() + Eigen::Index(6));
+    normals.conservativeResize(Eigen::NoChange, normals.cols() + Eigen::Index(6));
+    int idx = normals.cols() / 3 - 2;
     float dx = 0.0;
     float dy = 0.0;
     float dz = 0.0;
@@ -376,12 +382,24 @@ void WorldSim::pushFace(MatrixXf& positions, MatrixXf& normals, int idx,
 
 inline void WorldSim::pushCube(MatrixXf& positions, MatrixXf& normals, 
                                     float x, float y, float z) {
-    pushFace(positions, normals, 0, x, y, z, LEFT);
-    pushFace(positions, normals, 2, x, y, z, BOT);
-    pushFace(positions, normals, 4, x, y, z, FORWARD);
-    pushFace(positions, normals, 6, x, y, z, TOP);
-    pushFace(positions, normals, 8, x, y, z, RIGHT);
-    pushFace(positions, normals, 10, x, y, z, BACKWARD);
+    pushFace(positions, normals, x, y, z, LEFT);
+    pushFace(positions, normals, x, y, z, BOT);
+    pushFace(positions, normals, x, y, z, FORWARD);
+    pushFace(positions, normals, x, y, z, TOP);
+    pushFace(positions, normals, x, y, z, RIGHT);
+    pushFace(positions, normals, x, y, z, BACKWARD);
+}
+
+void WorldSim::pushChunk(MatrixXf& positions, MatrixXf& normals) {
+    for (int x = 0; x < CHUNK_SIZE; x++) {
+        for (int y = 0; y < CHUNK_SIZE; y++) {
+            for (int z = 0; z < CHUNK_SIZE; z++) {
+                if (tmp_chunk->getCell(x, y, z).type == SAND) {
+                    pushCube(positions, normals, x, y, z);
+                }
+            }
+        }
+    }
 }
 
 void WorldSim::drawContents() {
@@ -398,15 +416,16 @@ void WorldSim::drawContents() {
     shader.setUniform("u_model", model);
     shader.setUniform("u_view_projection", viewProjection);
 
-    int num_tris = 12;
+    MatrixXf positions(4, 0);
+    MatrixXf normals(4, 0);
 
-    MatrixXf positions(4, num_tris * 3);
-    MatrixXf normals(4, num_tris * 3);
+    //pushCube(positions, normals, 0, 0, 0);
+    //pushCube(positions, normals, 1, 1, 1);
 
-    pushCube(positions, normals, 0, 0, 0);
+    pushChunk(positions, normals);
 
     shader.uploadAttrib("in_position", positions, false);
     shader.uploadAttrib("in_normal", normals, false);
 
-    shader.drawArray(GL_TRIANGLES, 0, num_tris * 3);
+    shader.drawArray(GL_TRIANGLES, 0, positions.cols());
 }

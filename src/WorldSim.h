@@ -30,9 +30,11 @@ public:
 	virtual bool resizeCallbackEvent(int width, int height);
 
 	void pushCube(MatrixXf& positions, MatrixXf& normals, float x, float y, float z);
-	void pushFace(MatrixXf& positions, MatrixXf& normals, int idx, float x, float y, float z, CUBE_FACE face);
+	void pushFace(MatrixXf& positions, MatrixXf& normals, float x, float y, float z, CUBE_FACE face);
 
 private:
+	void pushChunk(MatrixXf& positions, MatrixXf& normals);
+
 	virtual void initGUI(Screen* screen);
 
 	GLShader shader;

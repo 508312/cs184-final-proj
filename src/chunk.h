@@ -1,7 +1,6 @@
 #ifndef CHUNK_H
 #define CHUNK_H
 
-#include "cell_types.h"
 #include "cell.h"
 #include <bitset>
 #include <array>
@@ -15,8 +14,10 @@ class Chunk {
 		Chunk();
 		void update();
 		cell& getCell(int x, int y, int z);
-		void setCell(int x, int y, int z, cell& cell);
+		void setCell(int x, int y, int z, cell cell);
 		void swapCells(int x, int y, int z, int xto, int yto, int zto);
+
+		int getIndex(int x, int y, int z) { return x + y * CHUNK_SIZE + z * CHUNK_SIZE * CHUNK_SIZE; };
 
 	private:
 		std::array<cell, CHUNK_SIZE* CHUNK_SIZE* CHUNK_SIZE> cells;
