@@ -244,6 +244,7 @@ int main(int argc, char **argv) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     app->drawContents();
+    app->simulate();
     // Draw nanogui
     //screen->drawContents();
     //screen->drawWidgets();

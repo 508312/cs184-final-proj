@@ -18,6 +18,7 @@ public:
 	void init();
 
 	virtual bool isAlive() { return is_alive; }
+	virtual void simulate();
 	virtual void drawContents();
 
 	// Screen events

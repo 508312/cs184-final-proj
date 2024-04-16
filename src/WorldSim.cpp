@@ -402,6 +402,13 @@ void WorldSim::pushChunk(MatrixXf& positions, MatrixXf& normals) {
     }
 }
 
+void WorldSim::simulate() {
+    if (!is_paused) {
+        tmp_chunk->setCell(CGL::Vector3D(3, 10, 3), cell{ color{ 0, 0, 0, 0 }, SAND });
+        tmp_chunk->update();
+    }
+}
+
 void WorldSim::drawContents() {
     glEnable(GL_DEPTH_TEST);
     shader.bind();

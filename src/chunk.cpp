@@ -69,7 +69,7 @@ cell& Chunk::getCell(CGL::Vector3D pos) {
 
 void Chunk::setCell(CGL::Vector3D pos, cell cell) {
     cells[getIndex(pos)] = cell;
-    dirty_cells.set(getIndex(pos));
+    // dirty_cells.set(getIndex(pos));
     return;
 }
 
