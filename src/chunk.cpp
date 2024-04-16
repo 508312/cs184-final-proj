@@ -8,8 +8,6 @@ color black = color{ 0, 0, 0, 0 };
 cell oob_cell = cell{ black, WALL };
 
 Chunk::Chunk(void) {
-    dirty_cells.reset();
-
     // air
     for (int x = 0; x < CHUNK_SIZE; x++) {
         for (int y = 0; y < CHUNK_SIZE; y++) {
@@ -30,6 +28,7 @@ Chunk::Chunk(void) {
     setCell(CGL::Vector3D(6, 6, 6), cell{black, SAND});
     setCell(CGL::Vector3D(1, 3, 1), cell{black, SAND});
     setCell(CGL::Vector3D(1, 6, 1), cell{ black, SAND });
+    dirty_cells.reset();
 }
 
 void Chunk::update() {
@@ -38,9 +37,8 @@ void Chunk::update() {
     for (int x = 0; x < CHUNK_SIZE; x++) {
         for (int y = 0; y < CHUNK_SIZE; y++) {
             for (int z = 0; z < CHUNK_SIZE; z++) {
-                std::cout << getIndex(CGL::Vector3D(x, y, z)) << " ";
-                if (dirty_cells.test(getIndex(CGL::Vector3D(x, y, z)) == false)) {
-                    std::cout << "dirty cell untrue" << std::endl;
+                //std::cout << getIndex(CGL::Vector3D(x, y, z)) << " ";
+                if (dirty_cells.test(getIndex(CGL::Vector3D(x, y, z))) == false) {
                     type2func[getCell(CGL::Vector3D(x, y, z)).type](this, CGL::Vector3D(x, y, z));
                 }
             }
@@ -78,6 +76,8 @@ void Chunk::swapCells(CGL::Vector3D curr_pos, CGL::Vector3D new_pos) {
 }         
 
 void Chunk::simulate(int simulation_steps) {
+    // not needed our system is realtime and smallest timestep is 1 frame, we are not "integrating" over timepoint
+    // as in: we do not want to see sand jump 3 pixels per frame, sim steps is always 1 for us
     for (int i = 0; i < simulation_steps; i++) {
         if (i % 100 == 0) {
             setCell(CGL::Vector3D(3, 3, 3), cell{black, SAND});

@@ -41,7 +41,8 @@ void updateSand(void* chunk, CGL::Vector3D curr_pos) {
 		std::cout << "Directly down" << std::endl;
 		pChunk->swapCells(curr_pos, curr_pos + CGL::Vector3D(0, -1, 0));
 	}
-	/*
+	/* 
+	* incorrect, get random should return vec3, this way produces incorrect results i think
 	else {
 		int size = 8;
 		while (size != 0) {
