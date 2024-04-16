@@ -289,7 +289,7 @@ void WorldSim::pushFace(MatrixXf& positions, MatrixXf& normals,
             dz = -1;
             
             // set correct normal
-            ny = -1;
+            ny = 1;
             break;
         case TOP:
             // y is constant
@@ -312,7 +312,7 @@ void WorldSim::pushFace(MatrixXf& positions, MatrixXf& normals,
             dz = -1;
 
             // set correct normal
-            nx = -1.0;
+            nx = 1.0;
             break;
         case RIGHT:
             // x is constant
@@ -347,7 +347,7 @@ void WorldSim::pushFace(MatrixXf& positions, MatrixXf& normals,
             dz = 0;
 
             // set correct normal
-            nz = -1.0;
+            nz = 1.0;
             break;
         default:
             std::cout << "SOMETHING WENT WRONG" << std::endl;

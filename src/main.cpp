@@ -17,6 +17,8 @@
 #include "misc/file_utils.h"
 #include "WorldSim.h"
 
+#include <random>
+
 typedef uint32_t gid_t;
 
 using namespace std;
@@ -168,6 +170,9 @@ bool find_project_root(const std::vector<std::string>& search_paths, std::string
 
 int main(int argc, char **argv) {
   // Attempt to find project root
+
+  srand(80085);
+
   std::vector<std::string> search_paths = {
     ".",
     "..",

@@ -16,12 +16,12 @@ void updateAir(void* chunk, CGL::Vector3D pos) {
 	return;
 }
 
-inline int get_random(int size, CGL::Vector3D* arr) {
+inline CGL::Vector3D get_random(int& size, CGL::Vector3D* arr) {
 	int ind = rand() % size;
 	CGL::Vector3D ret = arr[ind];
 	size -= 1;
 	arr[ind] = arr[size];
-	return ind % size;
+	return ret;
 }
 
 void updateSand(void* chunk, CGL::Vector3D curr_pos) {
@@ -41,19 +41,14 @@ void updateSand(void* chunk, CGL::Vector3D curr_pos) {
 		std::cout << "Directly down" << std::endl;
 		pChunk->swapCells(curr_pos, curr_pos + CGL::Vector3D(0, -1, 0));
 	}
-	/* 
-	* incorrect, get random should return vec3, this way produces incorrect results i think
 	else {
 		int size = 8;
 		while (size != 0) {
-			int adj_index = get_random(8, dirs);
-			size -= 1;
-			CGL::Vector3D new_pos = curr_pos + dirs[adj_index];
+			CGL::Vector3D new_pos = curr_pos + get_random(size, dirs);
 			if (pChunk->getCell(new_pos).type == AIR) {
-				std::cout << "Adjacently down ";
 				pChunk->swapCells(curr_pos, new_pos);
 				return;
 			}
 		}
-	} */
+	}
 }

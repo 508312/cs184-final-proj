@@ -28,6 +28,13 @@ Chunk::Chunk(void) {
     setCell(CGL::Vector3D(6, 6, 6), cell{black, SAND});
     setCell(CGL::Vector3D(1, 3, 1), cell{black, SAND});
     setCell(CGL::Vector3D(1, 6, 1), cell{ black, SAND });
+
+    
+    for (int y = 7; y < CHUNK_SIZE; y++) {
+        setCell(CGL::Vector3D(1, y, 1), cell{ black, SAND });
+        setCell(CGL::Vector3D(2, y, 5), cell{ black, SAND });
+        setCell(CGL::Vector3D(2, y, 6), cell{ black, SAND });
+    }
     dirty_cells.reset();
 }
 
