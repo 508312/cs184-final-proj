@@ -39,12 +39,10 @@ Chunk::Chunk(void) {
 }
 
 void Chunk::update() {
-    std::cout << "TICKING " << std::endl;
     // process 1 tick of time
     for (int x = 0; x < CHUNK_SIZE; x++) {
         for (int y = 0; y < CHUNK_SIZE; y++) {
             for (int z = 0; z < CHUNK_SIZE; z++) {
-                //std::cout << getIndex(CGL::Vector3D(x, y, z)) << " ";
                 if (dirty_cells.test(getIndex(CGL::Vector3D(x, y, z))) == false) {
                     type2func[getCell(CGL::Vector3D(x, y, z)).type](this, CGL::Vector3D(x, y, z));
                 }
@@ -53,7 +51,6 @@ void Chunk::update() {
     }
     dirty_cells.reset();
     if (dirty_cells.test(256 == false)) {
-        std::cout << "SUCCESSFUL RESET" << std::endl;
     }
 }
 
@@ -69,13 +66,10 @@ cell& Chunk::getCell(CGL::Vector3D pos) {
 
 void Chunk::setCell(CGL::Vector3D pos, cell cell) {
     cells[getIndex(pos)] = cell;
-    // dirty_cells.set(getIndex(pos));
     return;
 }
 
 void Chunk::swapCells(CGL::Vector3D curr_pos, CGL::Vector3D new_pos) {
-    std::cout << new_pos[0] << " " << new_pos[1] << " " << new_pos[2];
-
     std::swap(getCell(curr_pos), getCell(new_pos));
     dirty_cells.set(getIndex(curr_pos));
     dirty_cells.set(getIndex(new_pos));

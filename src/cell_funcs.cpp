@@ -25,7 +25,6 @@ inline CGL::Vector3D get_random(int& size, CGL::Vector3D* arr) {
 }
 
 void updateSand(void* chunk, CGL::Vector3D curr_pos) {
-	std::cout << "Updating" << std::endl;
 	CGL::Vector3D dirs[] = { CGL::Vector3D(-1, -1, -1),
 							 CGL::Vector3D(0, -1, -1),
 							 CGL::Vector3D(1, -1, -1),
@@ -38,7 +37,6 @@ void updateSand(void* chunk, CGL::Vector3D curr_pos) {
 	Chunk* pChunk = (Chunk*)chunk;
 
 	if (pChunk->getCell(curr_pos + CGL::Vector3D(0, -1, 0)).type == AIR) {
-		std::cout << "Directly down" << std::endl;
 		pChunk->swapCells(curr_pos, curr_pos + CGL::Vector3D(0, -1, 0));
 	}
 	else {
