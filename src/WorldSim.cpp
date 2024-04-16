@@ -394,7 +394,7 @@ void WorldSim::pushChunk(MatrixXf& positions, MatrixXf& normals) {
     for (int x = 0; x < CHUNK_SIZE; x++) {
         for (int y = 0; y < CHUNK_SIZE; y++) {
             for (int z = 0; z < CHUNK_SIZE; z++) {
-                if (tmp_chunk->getCell(x, y, z).type == SAND) {
+                if (tmp_chunk->getCell(CGL::Vector3D(x, y, z)).type == SAND) {
                     pushCube(positions, normals, x, y, z);
                 }
             }

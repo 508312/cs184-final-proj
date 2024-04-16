@@ -14,7 +14,7 @@ Chunk::Chunk(void) {
     for (int x = 0; x < CHUNK_SIZE; x++) {
         for (int y = 0; y < CHUNK_SIZE; y++) {
             for (int z = 0; z < CHUNK_SIZE; z++) {
-                setCell(x, y, z, cell{ black, AIR });
+                setCell(CGL::Vector3D(x, y, z), cell{ black, AIR });
             }
         }
     }
@@ -22,14 +22,14 @@ Chunk::Chunk(void) {
     // floor 
     for (int x = 0; x < CHUNK_SIZE; x++) {
         for (int z = 0; z < CHUNK_SIZE; z++) {
-            setCell(x, 0, z, cell{ black, SAND });
+            setCell(CGL::Vector3D(x, 0, z), cell{ black, SAND });
         }
     }
 
-    setCell(3, 3, 3, cell{ black, SAND });
-    setCell(6, 6, 6, cell{ black, SAND });
-    setCell(1, 3, 1, cell{ black, SAND });
-    setCell(1, 6, 1, cell{ black, SAND });
+    setCell(CGL::Vector3D(3, 3, 3), cell{black, SAND});
+    setCell(CGL::Vector3D(6, 6, 6), cell{black, SAND});
+    setCell(CGL::Vector3D(1, 3, 1), cell{black, SAND});
+    setCell(CGL::Vector3D(1, 6, 1), cell{ black, SAND });
 }
 
 void Chunk::update() {
@@ -38,34 +38,50 @@ void Chunk::update() {
     for (int x = 0; x < CHUNK_SIZE; x++) {
         for (int y = 0; y < CHUNK_SIZE; y++) {
             for (int z = 0; z < CHUNK_SIZE; z++) {
-                if (dirty_cells.test(getIndex(x, y, z)) == false) {
-                    type2func[getCell(x, y, z).type](this, x, y, z);
+                std::cout << getIndex(CGL::Vector3D(x, y, z)) << " ";
+                if (dirty_cells.test(getIndex(CGL::Vector3D(x, y, z)) == false)) {
+                    std::cout << "dirty cell untrue" << std::endl;
+                    type2func[getCell(CGL::Vector3D(x, y, z)).type](this, CGL::Vector3D(x, y, z));
                 }
             }
         }
     }
     dirty_cells.reset();
+    if (dirty_cells.test(256 == false)) {
+        std::cout << "SUCCESSFUL RESET" << std::endl;
+    }
 }
 
-cell& Chunk::getCell(int x, int y, int z) {
-    if (x < 0 || x >= CHUNK_SIZE ||
-        y < 0 || y >= CHUNK_SIZE ||
-        z < 0 || z >= CHUNK_SIZE) {
+cell& Chunk::getCell(CGL::Vector3D pos) {
+    if (pos[0] < 0 || pos[0] >= CHUNK_SIZE ||
+        pos[1] < 0 || pos[1] >= CHUNK_SIZE ||
+        pos[2] < 0 || pos[2] >= CHUNK_SIZE) {
         return oob_cell;
     }
 
-    return cells[getIndex(x, y, z)];
+    return cells[getIndex(pos)];
 }
 
-void Chunk::setCell(int x, int y, int z, cell cell) {
-    cells[getIndex(x, y, z)] = cell;
-    dirty_cells.set(getIndex(x, y, z));
+void Chunk::setCell(CGL::Vector3D pos, cell cell) {
+    cells[getIndex(pos)] = cell;
+    dirty_cells.set(getIndex(pos));
     return;
 }
 
-void Chunk::swapCells(int x, int y, int z, int xto, int yto, int zto) {
-    std::swap(getCell(x, y, z), getCell(xto, yto, zto));
-    dirty_cells.set(getIndex(x, y, z));
-    dirty_cells.set(getIndex(xto, yto, zto));
+void Chunk::swapCells(CGL::Vector3D curr_pos, CGL::Vector3D new_pos) {
+    std::cout << new_pos[0] << " " << new_pos[1] << " " << new_pos[2];
+
+    std::swap(getCell(curr_pos), getCell(new_pos));
+    dirty_cells.set(getIndex(curr_pos));
+    dirty_cells.set(getIndex(new_pos));
     return;
-}           
+}         
+
+void Chunk::simulate(int simulation_steps) {
+    for (int i = 0; i < simulation_steps; i++) {
+        if (i % 100 == 0) {
+            setCell(CGL::Vector3D(3, 3, 3), cell{black, SAND});
+        }
+        update();
+    }
+}

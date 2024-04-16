@@ -13,11 +13,12 @@ class Chunk {
 	public:
 		Chunk();
 		void update();
-		cell& getCell(int x, int y, int z);
-		void setCell(int x, int y, int z, cell cell);
-		void swapCells(int x, int y, int z, int xto, int yto, int zto);
+		cell& getCell(CGL::Vector3D pos);
+		void setCell(CGL::Vector3D pos, cell cell);
+		void swapCells(CGL::Vector3D curr_pos, CGL::Vector3D new_pos);
+		void simulate(int simulation_steps);
 
-		int getIndex(int x, int y, int z) { return x + y * CHUNK_SIZE + z * CHUNK_SIZE * CHUNK_SIZE; };
+		int getIndex(CGL::Vector3D pos) { return pos[0] + pos[1] * CHUNK_SIZE + pos[2] * CHUNK_SIZE * CHUNK_SIZE; };
 
 	private:
 		std::array<cell, CHUNK_SIZE* CHUNK_SIZE* CHUNK_SIZE> cells;

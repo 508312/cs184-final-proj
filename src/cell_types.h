@@ -16,7 +16,7 @@ enum CellType {
 #undef CELL
 
 #define CELL(m, p, f) f,
-constexpr static void (*type2func[]) (void*, int, int, int) = {
+constexpr static void (*type2func[]) (void*, CGL::Vector3D) = {
 	CELLS
 };
 #undef CELL
