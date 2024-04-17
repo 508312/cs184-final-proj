@@ -7,7 +7,8 @@
 #define CELLS \
 CELL(WALL, PROPERTY_EMPTY, updateError) \
 CELL(AIR, PROPERTY_EMPTY, updateAir) \
-CELL(SAND, PROPERTY_EMPTY, updateSand)
+CELL(SAND, PROPERTY_EMPTY, updateSand) \
+CELL(WATER, PROPERTY_EMPTY, updateWater)
 
 #define CELL(m, p, f) m,
 enum CellType {

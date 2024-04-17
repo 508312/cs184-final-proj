@@ -25,6 +25,7 @@ WorldSim::WorldSim(std::string project_root, Screen* screen) {
 
 WorldSim::~WorldSim() {
     shader.free();
+    shaderwater.free();
 }
 
 void WorldSim::init() {
@@ -72,6 +73,7 @@ void WorldSim::init() {
 
 void WorldSim::initShader() {
     shader.initFromFiles("default", project_root + "\\shaders\\default.vert", project_root + "\\shaders\\default.frag");
+    shaderwater.initFromFiles("default", project_root + "\\shaders\\water.vert", project_root + "\\shaders\\water.frag");
 }
 
 
@@ -390,12 +392,15 @@ inline void WorldSim::pushCube(MatrixXf& positions, MatrixXf& normals,
     pushFace(positions, normals, x, y, z, BACKWARD);
 }
 
-void WorldSim::pushChunk(MatrixXf& positions, MatrixXf& normals) {
+void WorldSim::pushChunk(MatrixXf& positions, MatrixXf& normals, MatrixXf& positions_water, MatrixXf& normals_water) {
     for (int x = 0; x < CHUNK_SIZE; x++) {
         for (int y = 0; y < CHUNK_SIZE; y++) {
             for (int z = 0; z < CHUNK_SIZE; z++) {
                 if (tmp_chunk->getCell(CGL::Vector3D(x, y, z)).type == SAND) {
                     pushCube(positions, normals, x, y, z);
+                }
+                if (tmp_chunk->getCell(CGL::Vector3D(x, y, z)).type == WATER) {
+                    pushCube(positions_water, normals_water, x, y, z);
                 }
             }
         }
@@ -405,13 +410,14 @@ void WorldSim::pushChunk(MatrixXf& positions, MatrixXf& normals) {
 void WorldSim::simulate() {
     if (!is_paused) {
         tmp_chunk->setCell(CGL::Vector3D(3, 10, 3), cell{ color{ 0, 0, 0, 0 }, SAND });
+        tmp_chunk->setCell(CGL::Vector3D(10, 10, 3), cell{ color{ 0, 0, 0, 0 }, WATER });
         tmp_chunk->update();
     }
 }
 
 void WorldSim::drawContents() {
     glEnable(GL_DEPTH_TEST);
-    shader.bind();
+    
                             
     Matrix4f model;
     model.setIdentity();
@@ -420,8 +426,7 @@ void WorldSim::drawContents() {
     Matrix4f projection = getProjectionMatrix();
     Matrix4f viewProjection = projection * view;
 
-    shader.setUniform("u_model", model);
-    shader.setUniform("u_view_projection", viewProjection);
+    
 
     MatrixXf positions(4, 0);
     MatrixXf normals(4, 0);
@@ -429,10 +434,23 @@ void WorldSim::drawContents() {
     //pushCube(positions, normals, 0, 0, 0);
     //pushCube(positions, normals, 1, 1, 1);
 
-    pushChunk(positions, normals);
+    MatrixXf positions_water(4, 0);
+    MatrixXf normals_water(4, 0);
 
+    pushChunk(positions, normals, positions_water, normals_water);
+    shader.bind();
+    shader.setUniform("u_model", model);
+    shader.setUniform("u_view_projection", viewProjection);
     shader.uploadAttrib("in_position", positions, false);
     shader.uploadAttrib("in_normal", normals, false);
 
     shader.drawArray(GL_TRIANGLES, 0, positions.cols());
+
+    shaderwater.bind();
+    shaderwater.setUniform("u_model", model);
+    shaderwater.setUniform("u_view_projection", viewProjection);
+    shaderwater.uploadAttrib("in_position", positions_water, false);
+    shaderwater.uploadAttrib("in_normal", normals_water, false);
+
+    shaderwater.drawArray(GL_TRIANGLES, 0, positions_water.cols());
 }

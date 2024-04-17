@@ -34,11 +34,12 @@ public:
 	void pushFace(MatrixXf& positions, MatrixXf& normals, float x, float y, float z, CUBE_FACE face);
 
 private:
-	void pushChunk(MatrixXf& positions, MatrixXf& normals);
+	void pushChunk(MatrixXf& positions, MatrixXf& normals, MatrixXf& positions_water, MatrixXf& normals_water);
 
 	virtual void initGUI(Screen* screen);
 
 	GLShader shader;
+	GLShader shaderwater;
 
 	Chunk* tmp_chunk;
 
