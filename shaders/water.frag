@@ -10,6 +10,6 @@ void main() {
 	float val = v_normal[0] * 1.0 + v_normal[1] * 0.9 + v_normal[2] * 0.8;
 	vec4 vmod = vec4(val, val, val, v_normal[3]);
 	out_color = (vec4(0, 0, 1, 0) * vmod);
-	out_color.a = 1;
+	out_color.a = 0.5;
 }
 
