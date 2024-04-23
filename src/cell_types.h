@@ -3,6 +3,8 @@
 
 //#include "properties.h"
 #include "cell_funcs.h"
+#include "chunk.h"
+
 
 #define CELLS \
 CELL(WALL, PROPERTY_EMPTY, updateError) \
@@ -17,7 +19,7 @@ enum CellType {
 #undef CELL
 
 #define CELL(m, p, f) f,
-constexpr static void (*type2func[]) (void*, CGL::Vector3D) = {
+constexpr static void (*type2func[]) (Chunk*, CGL::Vector3D) = {
 	CELLS
 };
 #undef CELL

@@ -3,9 +3,11 @@
 
 #include <CGL/vector3D.h>
 
-extern void updateError(void* chunk, CGL::Vector3D pos);
-extern void updateAir(void* chunk, CGL::Vector3D pos);
-extern void updateSand(void* chunk, CGL::Vector3D pos);
-extern void updateWater(void* chunk, CGL::Vector3D pos);
+class Chunk;
+
+extern void updateError(Chunk* chunk, CGL::Vector3D pos);
+extern void updateAir(Chunk* chunk, CGL::Vector3D pos);
+extern void updateSand(Chunk* chunk, CGL::Vector3D pos);
+extern void updateWater(Chunk* chunk, CGL::Vector3D pos);
 
 #endif
