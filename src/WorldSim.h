@@ -8,6 +8,8 @@
 #include "cubeFaceEnum.h"
 #include "chunk.h"
 
+#include "world.h"
+
 using namespace nanogui;
 
 class WorldSim {
@@ -30,18 +32,18 @@ public:
 	virtual bool scrollCallbackEvent(double x, double y);
 	virtual bool resizeCallbackEvent(int width, int height);
 
-	void pushCube(MatrixXf& positions, MatrixXf& normals, float x, float y, float z);
-	void pushFace(MatrixXf& positions, MatrixXf& normals, float x, float y, float z, CUBE_FACE face);
+	void pushCube(MatrixXf& positions, MatrixXf& normals, vec3 pos);
+	void pushFace(MatrixXf& positions, MatrixXf& normals, vec3 pos, CUBE_FACE face);
 
 private:
-	void pushChunk(MatrixXf& positions, MatrixXf& normals, MatrixXf& positions_water, MatrixXf& normals_water);
+	void pushChunk(Chunk* chunk, MatrixXf& positions, MatrixXf& normals, MatrixXf& positions_water, MatrixXf& normals_water);
 
 	virtual void initGUI(Screen* screen);
 
 	GLShader shader;
 	GLShader shaderwater;
 
-	Chunk* tmp_chunk;
+	World* world;
 
 	void initShader();
 

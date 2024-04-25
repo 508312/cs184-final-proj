@@ -12,7 +12,7 @@ set(CLOTHSIM_VIEWER_SOURCE
 
     chunk.cpp
     cell_funcs.cpp
-
+    world.cpp
 
     misc/file_utils.cpp
 )

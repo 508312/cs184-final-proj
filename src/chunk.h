@@ -8,23 +8,31 @@
 // Size of a side of a chunk. Should be a power of 2.
 #define CHUNK_SIZE 16
 
+class World;
+
 /** Manages space in this CHUNK_SIZE^3 world space. **/
 class Chunk {
 	public:
-		Chunk();
+		Chunk(World* wp, vec3 chunk_index);
 		void update();
-		cell& getCell(CGL::Vector3D pos);
-		void setCell(CGL::Vector3D pos, cell cell);
-		void swapCells(CGL::Vector3D curr_pos, CGL::Vector3D new_pos);
+		cell& getCell(vec3 pos);
+		void setCell(vec3 pos, cell cell);
+		void spawnCell(vec3 pos, cell cell);
+		void swapCells(vec3 curr_pos, vec3 new_pos);
 		void simulate(int simulation_steps);
 
-		int getIndex(CGL::Vector3D pos) { return pos[0] + pos[1] * CHUNK_SIZE + pos[2] * CHUNK_SIZE * CHUNK_SIZE; };
+		int getIndex(vec3 pos) { return pos[0] + pos[1] * CHUNK_SIZE + pos[2] * CHUNK_SIZE * CHUNK_SIZE; }
+
+		vec3 getChunkPos() { return chunk_pos; }
 
 	private:
 		std::array<cell, CHUNK_SIZE* CHUNK_SIZE* CHUNK_SIZE> cells;
 
 		// keep track of modified cells to no update twice per tick.
 		std::bitset<CHUNK_SIZE* CHUNK_SIZE* CHUNK_SIZE> dirty_cells;
+
+		World* world;
+		vec3 chunk_pos;
 };
 
 
