@@ -31,6 +31,7 @@ public:
 	virtual bool dropCallbackEvent(int count, const char** filenames);
 	virtual bool scrollCallbackEvent(double x, double y);
 	virtual bool resizeCallbackEvent(int width, int height);
+  	virtual void resetCamera();
 
 	void pushCube(MatrixXf& positions, MatrixXf& normals, vec3 pos);
 	void pushFace(MatrixXf& positions, MatrixXf& normals, vec3 pos, CUBE_FACE face);
@@ -80,6 +81,7 @@ private:
 	bool left_down = false;
 	bool right_down = false;
 	bool middle_down = false;
+	int spawn_distance = 5;
 
 	// Keyboard flags
 

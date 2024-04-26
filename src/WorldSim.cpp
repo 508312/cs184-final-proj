@@ -42,7 +42,7 @@ void WorldSim::init() {
     camera_info.nClip = 0.01;
     camera_info.fClip = 10000;
 
-    CGL::Vector3D target(0, 0, 0);
+    CGL::Vector3D target(8, 10, 40);
 
     CGL::Vector3D c_dir(0., 0., 0.);
 
@@ -206,10 +206,15 @@ bool WorldSim::mouseButtonCallbackEvent(int button, int action,
 void WorldSim::mouseMoved(double x, double y) { y = screen_h - y; }
 
 void WorldSim::mouseLeftDragged(double x, double y) {
-    float dx = x - mouse_x;
+    /*float dx = x - mouse_x;
     float dy = y - mouse_y;
 
     camera.rotate_by(-dy * (PI / screen_h), -dx * (PI / screen_w));
+    */
+    int dx = mouse_x - x;
+    int dy = mouse_y - y;
+    world->spawnCell(vec3(dx, dy, spawn_distance), cell{ color{ 0, 0, 0, 0 }, SAND });
+
 }
 
 void WorldSim::mouseRightDragged(double x, double y) {
@@ -232,12 +237,30 @@ bool WorldSim::keyCallbackEvent(int key, int scancode, int action,
             world->update();
             break;
         case ' ':
-            //resetCamera();
+            resetCamera();
             break;
         case 'p':
         case 'P':
             is_paused = !is_paused;
             break;
+
+        case 'W':
+        case 'w':
+            camera.move_by(0, 500, canonical_view_distance);
+            break;
+        case 'A':
+        case 'a':
+            camera.move_by(-500, 0, canonical_view_distance);
+            break;
+        case 'S':
+        case 's':
+            camera.move_by(0, -500, canonical_view_distance);
+            break;
+        case 'D':
+        case 'd':
+            camera.move_by(500, 0, canonical_view_distance);
+            break;
+
         case 'n':
         case 'N':
             if (is_paused) {
@@ -257,7 +280,8 @@ bool WorldSim::dropCallbackEvent(int count, const char** filenames) {
 }
 
 bool WorldSim::scrollCallbackEvent(double x, double y) {
-    camera.move_forward(y * scroll_rate);
+    camera.move_forward(y * scroll_rate);   
+    spawn_distance -= ceil(y*scroll_rate);
     return true;
 }
 
@@ -269,6 +293,7 @@ bool WorldSim::resizeCallbackEvent(int width, int height) {
     return true;
 }
 
+void WorldSim::resetCamera() { camera.copy_placement(canonicalCamera); }
 
 void WorldSim::initGUI(Screen* screen) {
     Window* window;
@@ -438,8 +463,10 @@ void WorldSim::pushChunk(Chunk* chunk, MatrixXf& positions, MatrixXf& normals, M
 
 void WorldSim::simulate() {
     if (!is_paused) {
+        /*
         world->spawnCell(vec3(3, 10, 3), cell{ color{ 0, 0, 0, 0 }, SAND });
         world->spawnCell(vec3(10, 10, 3), cell{ color{ 0, 0, 0, 0 }, WATER });
+        */
         world->update();
     }
 }
