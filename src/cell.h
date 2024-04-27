@@ -13,7 +13,7 @@ struct color {
 };
 
 struct cell {
-	color clr;
+	color color;
 	CellType type;
 	// arbitrary attribute if we need it. For example duration left on flame(it starts with 10, and ticks down every tick, upon reaching 0 it extinguishes)
 	//attrubute attr,

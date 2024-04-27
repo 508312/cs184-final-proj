@@ -21,10 +21,7 @@ in vec2 in_uv;
 // That is, in the linked fragment shader, these values become the 
 // "in" variables.
 out vec4 v_position;
-out vec4 v_normal;
 out vec4 v_colors;
-out vec2 v_uv;
-out vec4 v_tangent;
 
 // Every shader features a "main" function.
 // This is typically where we write to the "out" variables that the
@@ -32,18 +29,7 @@ out vec4 v_tangent;
 // which is the final screen-space location of this vertex which the
 // GPU's triangle rasterizer takes in.
 void main() {
-  // Here, we just apply the model's transformation to the various
-  // per-vertex properties. That way, when the fragment shader reads
-  // them, we already have the position in world-space.
-  //v_position = u_model * in_position;
   v_colors = in_colors;
-  v_normal = normalize(u_model * in_normal);
-  //v_uv = in_uv;
-  //v_tangent = normalize(u_model * in_tangent);
-  
-  // The final screen-space location of this vertex which the
-  // GPU's triangle rasterizer takes in.
   
   gl_Position = u_view_projection * u_model * in_position;
-  //gl_Position = in_position;
 }
