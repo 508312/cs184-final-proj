@@ -38,6 +38,7 @@ public:
 
 private:
 	void pushChunk(Chunk* chunk, MatrixXf& positions, MatrixXf& normals, MatrixXf& positions_water, MatrixXf& normals_water);
+	void pushChunkBbox(Chunk* chunk, MatrixXf& positions, MatrixXf& normals);
 
 	virtual void initGUI(Screen* screen);
 

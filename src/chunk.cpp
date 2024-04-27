@@ -21,12 +21,14 @@ Chunk::Chunk(World* wp, vec3 chunk_index) {
             }
         }
     }
-
+    bbox_from = vec3(0, 0, 0);
+    bbox_to = vec3(CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE);
     dirty_cells.reset();
 }
 
 void Chunk::update() {
     // process 1 tick of time
+    /*
     for (int x = 0; x < CHUNK_SIZE; x++) {
         for (int y = 0; y < CHUNK_SIZE; y++) {
             for (int z = 0; z < CHUNK_SIZE; z++) {
@@ -36,6 +38,28 @@ void Chunk::update() {
             }
         }
     }
+    */
+
+    std::cout << "updating chunk " << getChunkPos().x << " " << getChunkPos().y << " " << getChunkPos().z
+    << " from " << bbox_from.x << " " << bbox_from.y << " " << bbox_from.z
+    << " to " << bbox_to.x << " " << bbox_to.y << " " << bbox_to.z << std::endl;
+
+    vec3 bbox_from_copy = bbox_from;
+    vec3 bbox_to_copy = bbox_to;
+    resetBbox();
+
+    for (int x = bbox_from_copy.x; x < bbox_to_copy.x; x++) {
+        for (int y = bbox_from_copy.y; y < bbox_to_copy.y; y++) {
+            for (int z = bbox_from_copy.z; z < bbox_to_copy.z; z++) {
+                if (dirty_cells.test(getIndex(vec3(x, y, z))) == false) {
+                    type2func[getCell(vec3(x, y, z)).type](this, vec3(x, y, z));
+                } else {
+                    expandBbox(vec3(x, y, z));
+                }
+            }
+        }
+    }
+
     dirty_cells.reset();
     if (dirty_cells.test(256 == false)) {
     }
@@ -59,7 +83,22 @@ void Chunk::spawnCell(vec3 pos, cell cell) {
     }
 
     cells[getIndex(pos)] = cell;
+    expandBbox(pos);
     return;
+}
+
+void Chunk::resetBbox() {
+    bbox_to = vec3(-1, -1, -1);
+    bbox_from = vec3(CHUNK_SIZE + 1, CHUNK_SIZE + 1, CHUNK_SIZE + 1);
+}
+
+void Chunk::expandBbox(vec3& pos) {
+    bbox_to.x = std::max(bbox_to.x, std::min(pos.x + 2, CHUNK_SIZE));
+    bbox_to.y = std::max(bbox_to.y, std::min(pos.y + 2, CHUNK_SIZE));
+    bbox_to.z = std::max(bbox_to.z, std::min(pos.z + 2, CHUNK_SIZE));
+    bbox_from.x = std::min(bbox_from.x, std::max(pos.x - 1, 0));
+    bbox_from.y = std::min(bbox_from.y, std::max(pos.y - 1, 0));
+    bbox_from.z = std::min(bbox_from.z, std::max(pos.z - 1, 0));
 }
 
 void Chunk::setCell(vec3 pos, cell cell) {
@@ -71,6 +110,7 @@ void Chunk::setCell(vec3 pos, cell cell) {
 
     cells[getIndex(pos)] = cell;
     dirty_cells.set(getIndex(pos));
+    expandBbox(pos);
     return;
 }
 

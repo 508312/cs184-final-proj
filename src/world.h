@@ -22,7 +22,7 @@ class World {
 	public:
 		World();
 		~World();
-		void update();
+		std::vector<Chunk*> update();
 		cell& getCell(vec3 pos);
 		void setCell(vec3 pos, cell cell);
 		void spawnCell(vec3 pos, cell cell);

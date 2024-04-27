@@ -23,13 +23,25 @@ class Chunk {
 
 		int getIndex(vec3 pos) { return pos[0] + pos[1] * CHUNK_SIZE + pos[2] * CHUNK_SIZE * CHUNK_SIZE; }
 
+		bool needsUpdate() { return !(bbox_to == vec3(-1, -1, -1)); }
+
 		vec3 getChunkPos() { return chunk_pos; }
 
+		void expandBbox(vec3& pos);
+
+		vec3 getBboxFrom() { return bbox_from; }
+		vec3 getBboxTo() { return bbox_to; }
+
 	private:
+		void resetBbox();
+
 		std::array<cell, CHUNK_SIZE* CHUNK_SIZE* CHUNK_SIZE> cells;
 
 		// keep track of modified cells to no update twice per tick.
 		std::bitset<CHUNK_SIZE* CHUNK_SIZE* CHUNK_SIZE> dirty_cells;
+
+		vec3 bbox_from;
+		vec3 bbox_to;
 
 		World* world;
 		vec3 chunk_pos;

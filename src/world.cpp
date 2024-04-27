@@ -55,11 +55,16 @@ std::vector<Chunk*> World::getChunks() {
 	return ret;
 }
 
-void World::update() {
-
-
+// might be slow as well?
+std::vector<Chunk*> World::update() {
+	std::vector<Chunk*> updated_chunks;
 	for (auto entry = chunks.begin(); entry != chunks.end(); entry++) {
 		Chunk* chunk = entry->second;
-		chunk->update();
+		if (chunk->needsUpdate()) {
+			chunk->update();
+			updated_chunks.push_back(chunk);
+		}
+		
 	}
+	return updated_chunks;
 }

@@ -95,6 +95,11 @@ class IntVec3D {
             (*this) *= (1. / c);
         }
 
+        // scalar division / assignment
+        inline void operator<<(const int& c) {
+            (*this) *= (1. / c);
+        }
+
         /**
             * Returns Euclidean length.
             */

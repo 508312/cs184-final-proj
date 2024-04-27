@@ -206,11 +206,10 @@ bool WorldSim::mouseButtonCallbackEvent(int button, int action,
 void WorldSim::mouseMoved(double x, double y) { y = screen_h - y; }
 
 void WorldSim::mouseLeftDragged(double x, double y) {
-    /*float dx = x - mouse_x;
-    float dy = y - mouse_y;
-
-    camera.rotate_by(-dy * (PI / screen_h), -dx * (PI / screen_w));
-    */
+    //float dx = x - mouse_x;
+    //float dy = y - mouse_y;
+    //camera.rotate_by(-dy * (PI / screen_h), -dx * (PI / screen_w));
+    
     int dx = mouse_x - x;
     int dy = mouse_y - y;
     world->spawnCell(vec3(dx, dy, spawn_distance), cell{ color{ 0, 0, 0, 0 }, SAND });
@@ -312,7 +311,7 @@ void WorldSim::initGUI(Screen* screen) {
 }
 
 void WorldSim::pushFace(MatrixXf& positions, MatrixXf& normals,
-                                        vec3 pos ,
+                                        vec3 pos,
                                         CUBE_FACE face) {
     positions.conservativeResize(Eigen::NoChange, positions.cols() + Eigen::Index(6));
     normals.conservativeResize(Eigen::NoChange, normals.cols() + Eigen::Index(6));
@@ -441,6 +440,20 @@ inline void WorldSim::pushCube(MatrixXf& positions, MatrixXf& normals,
     pushFace(positions, normals, pos, BACKWARD);
 }
 
+void WorldSim::pushChunkBbox(Chunk* chunk, MatrixXf& positions, MatrixXf& normals) {
+    vec3 from = chunk->getBboxFrom();
+    vec3 to = chunk->getBboxTo();
+    for (int x = from.x; x < to.x; x++) {
+        for (int y = from.y; y < to.y; y++) {
+            for (int z = from.z; z < to.z; z++) {
+                if (x == from.x || x == to.x - 1 || y == from.y || y == to.y - 1 || z == from.z || z == to.z - 1) {
+                    pushCube(positions, normals, chunk->getChunkPos() * CHUNK_SIZE + vec3(x, y, z));
+                }
+            }
+        }
+    }
+}
+
 void WorldSim::pushChunk(Chunk* chunk, MatrixXf& positions, MatrixXf& normals, MatrixXf& positions_water, MatrixXf& normals_water) {
     
     //std::cout << "pushing chunk x y z " << chunk->getChunkPos()[0]
@@ -515,4 +528,19 @@ void WorldSim::drawContents() {
     shaderwater.uploadAttrib("in_normal", normals_water, false);
 
     shaderwater.drawArray(GL_TRIANGLES, 0, positions_water.cols());
+
+
+    shaderwater.bind();
+    positions(4, 0);
+    normals(4, 0);
+    for (Chunk* chunk : chunks) {
+        pushChunkBbox(chunk, positions, normals);
+    }
+
+    shaderwater.setUniform("u_model", model);
+    shaderwater.setUniform("u_view_projection", viewProjection);
+    shaderwater.uploadAttrib("in_position", positions, false);
+    shaderwater.uploadAttrib("in_normal", normals, false);
+
+    shaderwater.drawArray(GL_LINES, 0, positions.cols());
 }
