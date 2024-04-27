@@ -471,7 +471,7 @@ void WorldSim::pushChunkBbox(Chunk* chunk, MatrixXf& positions, MatrixXf& normal
         for (int y = from.y; y < to.y; y++) {
             for (int z = from.z; z < to.z; z++) {
                 if (x == from.x || x == to.x - 1 || y == from.y || y == to.y - 1 || z == from.z || z == to.z - 1) {
-                    pushCube(positions, normals, chunk->getChunkPos() * CHUNK_SIZE + vec3(x, y, z));
+                    //pushCube(positions, normals, chunk->getChunkPos() * CHUNK_SIZE + vec3(x, y, z));
                 }
             }
         }
