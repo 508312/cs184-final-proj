@@ -462,11 +462,12 @@ inline void WorldSim::pushCube(MatrixXf& positions, MatrixXf& colors,
 void WorldSim::pushChunkBbox(Chunk* chunk, MatrixXf& positions, MatrixXf& colors) {
     vec3 from = chunk->getBboxFrom();
     vec3 to = chunk->getBboxTo();
+    color outline_color = { 255, 0, 0, 90 };
     for (int x = from.x; x < to.x; x++) {
         for (int y = from.y; y < to.y; y++) {
             for (int z = from.z; z < to.z; z++) {
                 if (x == from.x || x == to.x - 1 || y == from.y || y == to.y - 1 || z == from.z || z == to.z - 1) {
-                    //pushCube(positions, normals, chunk->getChunkPos() * CHUNK_SIZE + vec3(x, y, z));
+                    pushCube(positions, colors, chunk->getChunkPos() * CHUNK_SIZE + vec3(x, y, z), outline_color);
                 }
             }
         }
@@ -528,4 +529,21 @@ void WorldSim::drawContents() {
     shader.uploadAttrib("in_colors", colors, false);
 
     shader.drawArray(GL_TRIANGLES, 0, positions.cols());
+
+    bool draw_bbox_outline = false;
+    if (draw_bbox_outline) {
+        positions(4, 0);
+        colors(4, 0);
+
+        for (Chunk* chunk : chunks) {
+            pushChunkBbox(chunk, positions, colors);
+        }
+        shader.bind();
+        shader.setUniform("u_model", model);
+        shader.setUniform("u_view_projection", viewProjection);
+        shader.uploadAttrib("in_position", positions, false);
+        shader.uploadAttrib("in_colors", colors, false);
+
+        shader.drawArray(GL_LINES, 0, positions.cols());
+    }
 }
