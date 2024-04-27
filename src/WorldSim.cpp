@@ -213,7 +213,7 @@ void WorldSim::mouseLeftDragged(double x, double y) {
     */
     int dx = mouse_x - x;
     int dy = mouse_y - y;
-    world->spawnCell(vec3(dx, dy, spawn_distance), cell{ color{ 0, 0, 0, 0 }, SAND });
+    world->spawnCell(vec3(dx, dy, spawn_distance), cell{ color{ 0, 0, 0, 0 }, WATER });
 
 }
 
@@ -311,11 +311,13 @@ void WorldSim::initGUI(Screen* screen) {
     }
 }
 
-void WorldSim::pushFace(MatrixXf& positions, MatrixXf& normals,
+void WorldSim::pushFace(MatrixXf& positions, MatrixXf& normals, MatrixXf& colors,
                                         vec3 pos ,
-                                        CUBE_FACE face) {
+                                        CUBE_FACE face,
+                                        CellType type) {
     positions.conservativeResize(Eigen::NoChange, positions.cols() + Eigen::Index(6));
     normals.conservativeResize(Eigen::NoChange, normals.cols() + Eigen::Index(6));
+    colors.conservativeResize(Eigen::NoChange, colors.cols() + Eigen::Index(6));
     int idx = normals.cols() / 3 - 2;
     float dx = 0.0;
     float dy = 0.0;
@@ -325,6 +327,10 @@ void WorldSim::pushFace(MatrixXf& positions, MatrixXf& normals,
     float nx = 0.0;
     float ny = 0.0;
     float nz = 0.0;
+
+    float r = 0.0;
+    float g = 0.0;
+    float b = 0.0;
 
     int x = pos[0];
     int y = pos[1];
@@ -429,19 +435,37 @@ void WorldSim::pushFace(MatrixXf& positions, MatrixXf& normals,
     normals.col((idx + 1) * 3) << nx, ny, nz, 0.0;
     normals.col((idx + 1) * 3 + 1) << nx, ny, nz, 0.0;
     normals.col((idx + 1) * 3 + 2) << nx, ny, nz, 0.0;
+
+    if (type == SAND) {
+        r = 1.0;
+        g = 1.0;
+        b = 0.0;
+    }
+    else if (type == WATER) {
+        r = 0.0;
+        g = 0.0;
+        b = 1.0;
+    }
+
+    colors.col(idx * 3) << r, g, b, 0.0;
+    colors.col(idx * 3 + 1) << r, g, b, 0.0;
+    colors.col(idx * 3 + 2) << r, g, b, 0.0;
+    colors.col((idx + 1) * 3) << r, g, b, 0.0;
+    colors.col((idx + 1) * 3 + 1) << r, g, b, 0.0;
+    colors.col((idx + 1) * 3 + 2) << r, g, b, 0.0;
 }
 
-inline void WorldSim::pushCube(MatrixXf& positions, MatrixXf& normals, 
-                                    vec3 pos) {
-    pushFace(positions, normals, pos, LEFT);
-    pushFace(positions, normals, pos, BOT);
-    pushFace(positions, normals, pos, FORWARD);
-    pushFace(positions, normals, pos, TOP);
-    pushFace(positions, normals, pos, RIGHT);
-    pushFace(positions, normals, pos, BACKWARD);
+inline void WorldSim::pushCube(MatrixXf& positions, MatrixXf& normals, MatrixXf& colors, 
+                                    vec3 pos, CellType type) {
+    pushFace(positions, normals, colors, pos, LEFT, type);
+    pushFace(positions, normals, colors, pos, BOT, type);
+    pushFace(positions, normals, colors, pos, FORWARD, type);
+    pushFace(positions, normals, colors, pos, TOP, type);
+    pushFace(positions, normals, colors, pos, RIGHT, type);
+    pushFace(positions, normals, colors, pos, BACKWARD, type);
 }
 
-void WorldSim::pushChunk(Chunk* chunk, MatrixXf& positions, MatrixXf& normals, MatrixXf& positions_water, MatrixXf& normals_water) {
+void WorldSim::pushChunk(Chunk* chunk, MatrixXf& positions, MatrixXf& normals, MatrixXf& colors) {
     
     //std::cout << "pushing chunk x y z " << chunk->getChunkPos()[0]
     //    << " " << chunk->getChunkPos()[1]
@@ -450,11 +474,8 @@ void WorldSim::pushChunk(Chunk* chunk, MatrixXf& positions, MatrixXf& normals, M
     for (int x = 0; x < CHUNK_SIZE; x++) {
         for (int y = 0; y < CHUNK_SIZE; y++) {
             for (int z = 0; z < CHUNK_SIZE; z++) {
-                if (chunk->getCell(vec3(x, y, z)).type == SAND) {
-                    pushCube(positions, normals, chunk->getChunkPos() * CHUNK_SIZE + vec3(x, y, z));
-                }
-                if (chunk->getCell(vec3(x, y, z)).type == WATER) {
-                    pushCube(positions_water, normals_water, chunk->getChunkPos() * CHUNK_SIZE + vec3(x, y, z));
+                if (chunk->getCell(vec3(x, y, z)).type != AIR) {
+                    pushCube(positions, normals, colors, chunk->getChunkPos() * CHUNK_SIZE + vec3(x, y, z), chunk->getCell(vec3(x, y, z)).type);
                 }
             }
         }
@@ -484,35 +505,21 @@ void WorldSim::drawContents() {
     Matrix4f projection = getProjectionMatrix();
     Matrix4f viewProjection = projection * view;
 
-    
-
     MatrixXf positions(4, 0);
     MatrixXf normals(4, 0);
-
-    //pushCube(positions, normals, 0, 0, 0);
-    //pushCube(positions, normals, 1, 1, 1);
-
-    MatrixXf positions_water(4, 0);
-    MatrixXf normals_water(4, 0);
+    MatrixXf colors(4, 0);
 
     std::vector<Chunk*> chunks = world->getChunks();
 
     for (Chunk* chunk : chunks) {
-        pushChunk(chunk, positions, normals, positions_water, normals_water);
+        pushChunk(chunk, positions, normals, colors);
     }
     shader.bind();
     shader.setUniform("u_model", model);
     shader.setUniform("u_view_projection", viewProjection);
     shader.uploadAttrib("in_position", positions, false);
     shader.uploadAttrib("in_normal", normals, false);
+    shader.uploadAttrib("in_colors", colors, false);
 
     shader.drawArray(GL_TRIANGLES, 0, positions.cols());
-
-    shaderwater.bind();
-    shaderwater.setUniform("u_model", model);
-    shaderwater.setUniform("u_view_projection", viewProjection);
-    shaderwater.uploadAttrib("in_position", positions_water, false);
-    shaderwater.uploadAttrib("in_normal", normals_water, false);
-
-    shaderwater.drawArray(GL_TRIANGLES, 0, positions_water.cols());
 }

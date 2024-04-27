@@ -33,12 +33,11 @@ public:
 	virtual bool resizeCallbackEvent(int width, int height);
   	virtual void resetCamera();
 
-	void pushCube(MatrixXf& positions, MatrixXf& normals, vec3 pos);
-	void pushFace(MatrixXf& positions, MatrixXf& normals, vec3 pos, CUBE_FACE face);
+	void pushCube(MatrixXf& positions, MatrixXf& normals, MatrixXf& colors, vec3 pos, CellType type);
+	void pushFace(MatrixXf& positions, MatrixXf& normals, MatrixXf& colors, vec3 pos, CUBE_FACE face, CellType type);
 
 private:
-	void pushChunk(Chunk* chunk, MatrixXf& positions, MatrixXf& normals, MatrixXf& positions_water, MatrixXf& normals_water);
-
+	void pushChunk(Chunk* chunk, MatrixXf& positions, MatrixXf& normals, MatrixXf& colors);
 	virtual void initGUI(Screen* screen);
 
 	GLShader shader;
