@@ -8,7 +8,7 @@ inline uint8_t getRandom(uint8_t from, uint8_t to) {
 	return rand()%(to-from) + from;
 };
 
-#define SAND_COLOR {getRandom(220, 255), getRandom(200, 255), getRandom(0, 10), 255}
+#define SAND_COLOR {getRandom(235, 255), getRandom(220, 255), getRandom(0, 10), 255}
 
 class Chunk;
 

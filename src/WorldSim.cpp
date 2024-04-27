@@ -70,7 +70,7 @@ void WorldSim::init() {
 
     color black = color{ 0, 0, 0, 255 };
     color sand = color{ 255, 255, 0, 255 };
-    color water = color{ 0, 0, 255, 178 };
+    color water = color{ 0, 0, 255, 120 };
     // floor 
     for (int x = 0; x < CHUNK_SIZE; x++) {
         for (int z = 0; z < CHUNK_SIZE; z++) {
