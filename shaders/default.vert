@@ -11,6 +11,7 @@ uniform mat4 u_view_projection;
 // would later interpolate using barycentric coordinates.
 in vec4 in_position;
 in vec4 in_normal;
+in vec4 in_colors;
 in vec4 in_tangent;
 in vec2 in_uv;
 
@@ -21,6 +22,7 @@ in vec2 in_uv;
 // "in" variables.
 out vec4 v_position;
 out vec4 v_normal;
+out vec4 v_colors;
 out vec2 v_uv;
 out vec4 v_tangent;
 
@@ -34,6 +36,7 @@ void main() {
   // per-vertex properties. That way, when the fragment shader reads
   // them, we already have the position in world-space.
   //v_position = u_model * in_position;
+  v_colors = in_colors;
   v_normal = normalize(u_model * in_normal);
   //v_uv = in_uv;
   //v_tangent = normalize(u_model * in_tangent);
