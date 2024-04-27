@@ -310,16 +310,10 @@ void WorldSim::initGUI(Screen* screen) {
     }
 }
 
-<<<<<<< HEAD
-void WorldSim::pushFace(MatrixXf& positions, MatrixXf& normals,
-                                        vec3 pos,
-                                        CUBE_FACE face) {
-=======
 void WorldSim::pushFace(MatrixXf& positions, MatrixXf& normals, MatrixXf& colors,
                                         vec3 pos ,
                                         CUBE_FACE face,
                                         CellType type) {
->>>>>>> 35751d82feae114495067c7c8d65df7e58ef0f90
     positions.conservativeResize(Eigen::NoChange, positions.cols() + Eigen::Index(6));
     normals.conservativeResize(Eigen::NoChange, normals.cols() + Eigen::Index(6));
     colors.conservativeResize(Eigen::NoChange, colors.cols() + Eigen::Index(6));
@@ -470,7 +464,6 @@ inline void WorldSim::pushCube(MatrixXf& positions, MatrixXf& normals, MatrixXf&
     pushFace(positions, normals, colors, pos, BACKWARD, type);
 }
 
-<<<<<<< HEAD
 void WorldSim::pushChunkBbox(Chunk* chunk, MatrixXf& positions, MatrixXf& normals) {
     vec3 from = chunk->getBboxFrom();
     vec3 to = chunk->getBboxTo();
@@ -485,10 +478,7 @@ void WorldSim::pushChunkBbox(Chunk* chunk, MatrixXf& positions, MatrixXf& normal
     }
 }
 
-void WorldSim::pushChunk(Chunk* chunk, MatrixXf& positions, MatrixXf& normals, MatrixXf& positions_water, MatrixXf& normals_water) {
-=======
 void WorldSim::pushChunk(Chunk* chunk, MatrixXf& positions, MatrixXf& normals, MatrixXf& colors) {
->>>>>>> 35751d82feae114495067c7c8d65df7e58ef0f90
     
     //std::cout << "pushing chunk x y z " << chunk->getChunkPos()[0]
     //    << " " << chunk->getChunkPos()[1]
@@ -545,30 +535,4 @@ void WorldSim::drawContents() {
     shader.uploadAttrib("in_colors", colors, false);
 
     shader.drawArray(GL_TRIANGLES, 0, positions.cols());
-<<<<<<< HEAD
-
-    shaderwater.bind();
-    shaderwater.setUniform("u_model", model);
-    shaderwater.setUniform("u_view_projection", viewProjection);
-    shaderwater.uploadAttrib("in_position", positions_water, false);
-    shaderwater.uploadAttrib("in_normal", normals_water, false);
-
-    shaderwater.drawArray(GL_TRIANGLES, 0, positions_water.cols());
-
-
-    shaderwater.bind();
-    positions(4, 0);
-    normals(4, 0);
-    for (Chunk* chunk : chunks) {
-        pushChunkBbox(chunk, positions, normals);
-    }
-
-    shaderwater.setUniform("u_model", model);
-    shaderwater.setUniform("u_view_projection", viewProjection);
-    shaderwater.uploadAttrib("in_position", positions, false);
-    shaderwater.uploadAttrib("in_normal", normals, false);
-
-    shaderwater.drawArray(GL_LINES, 0, positions.cols());
-=======
->>>>>>> 35751d82feae114495067c7c8d65df7e58ef0f90
 }

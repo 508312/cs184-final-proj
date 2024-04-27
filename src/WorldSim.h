@@ -37,13 +37,9 @@ public:
 	void pushFace(MatrixXf& positions, MatrixXf& normals, MatrixXf& colors, vec3 pos, CUBE_FACE face, CellType type);
 
 private:
-<<<<<<< HEAD
 	void pushChunk(Chunk* chunk, MatrixXf& positions, MatrixXf& normals, MatrixXf& positions_water, MatrixXf& normals_water);
 	void pushChunkBbox(Chunk* chunk, MatrixXf& positions, MatrixXf& normals);
 
-=======
-	void pushChunk(Chunk* chunk, MatrixXf& positions, MatrixXf& normals, MatrixXf& colors);
->>>>>>> 35751d82feae114495067c7c8d65df7e58ef0f90
 	virtual void initGUI(Screen* screen);
 
 	GLShader shader;
