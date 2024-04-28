@@ -75,12 +75,21 @@ void WorldSim::init() {
 
     color black = color{ 0, 0, 0, 255 };
     color sand = color{ 255, 255, 0, 255 };
-    color water = color{ 0, 0, 255, 120 };
+    color water = color{ 0, 0, 255, 50 };
     // floor 
     for (int x = 0; x < 100; x++) {
         for (int z = 0; z < 100; z++) {
             world->spawnCell(vec3(x, 0, z), cell{ SAND_COLOR, SAND });
             //world->spawnCell(vec3(x, -1, z), cell{ SAND_COLOR, WALL });
+        }
+    }
+
+    for (int x = 20; x < 25; x++) {
+        for (int y = 20; y < 25; y++) {
+            for (int z = 20; z < 25; z++) {
+                world->spawnCell(vec3(x, y, z), cell{ water, WATER });
+                //world->spawnCell(vec3(x, -1, z), cell{ SAND_COLOR, WALL });
+            }
         }
     }
 
@@ -534,6 +543,33 @@ void WorldSim::pushFace(MatrixXf& positions, MatrixXf& colors,
     colors.col((idx + 1) * 3 + 2) << r, g, b, a;
 }
 
+inline void WorldSim::pushChunkCube(MatrixXf& positions, MatrixXf& colors, Chunk* chunk, vec3 posInChunk) {
+    if (chunk->getCell(posInChunk).color.a == 0) {
+        return;
+    }
+    vec3 pos = chunk->getChunkPos() * CHUNK_SIZE + posInChunk;  // global pos
+    cell& self = chunk->getCell(posInChunk);
+    cell& topNeighbor = chunk->getCell(posInChunk + vec3(0, 1, 0));
+    cell& botNeighbor = chunk->getCell(posInChunk + vec3(0, -1, 0));
+    cell& leftNeighbor = chunk->getCell(posInChunk + vec3(-1, 0, 0));
+    cell& rightNeighbor = chunk->getCell(posInChunk + vec3(1, 0, 0));
+    cell& forwardNeighbor = chunk->getCell(posInChunk + vec3(0, 0, 1));
+    cell& backwardNeighbor = chunk->getCell(posInChunk + vec3(0, 0, -1));
+
+    if (leftNeighbor.color.a != 255 && leftNeighbor.type != self.type)
+        pushFace(positions, colors, pos, LEFT, self.color);
+    if (botNeighbor.color.a != 255 && botNeighbor.type != self.type)
+        pushFace(positions, colors, pos, BOT, self.color);
+    if (forwardNeighbor.color.a != 255 && forwardNeighbor.type != self.type)
+        pushFace(positions, colors, pos, FORWARD, self.color);
+    if (topNeighbor.color.a != 255 && topNeighbor.type != self.type)
+        pushFace(positions, colors, pos, TOP, self.color);
+    if (rightNeighbor.color.a != 255 && rightNeighbor.type != self.type)
+        pushFace(positions, colors, pos, RIGHT, self.color);
+    if (backwardNeighbor.color.a != 255 && backwardNeighbor.type != self.type)
+        pushFace(positions, colors, pos, BACKWARD, self.color);
+}
+
 inline void WorldSim::pushCube(MatrixXf& positions, MatrixXf& colors, 
                                     vec3 pos, color& color) {
     pushFace(positions, colors, pos, LEFT, color);
@@ -568,9 +604,10 @@ void WorldSim::pushChunk(Chunk* chunk, MatrixXf& positions, MatrixXf& colors) {
     for (int x = 0; x < CHUNK_SIZE; x++) {
         for (int y = 0; y < CHUNK_SIZE; y++) {
             for (int z = 0; z < CHUNK_SIZE; z++) {
-                if (chunk->getCell(vec3(x, y, z)).type != AIR) {
-                    pushCube(positions, colors, chunk->getChunkPos() * CHUNK_SIZE + vec3(x, y, z), chunk->getCell(vec3(x, y, z)).color);
-                }
+                //if (chunk->getCell(vec3(x, y, z)).type != AIR) {
+                //    pushCube(positions, colors, chunk->getChunkPos() * CHUNK_SIZE + vec3(x, y, z), chunk->getCell(vec3(x, y, z)).color);
+                //}
+                pushChunkCube(positions, colors, chunk, vec3(x, y, z));
             }
         }
     }

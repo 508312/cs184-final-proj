@@ -41,6 +41,7 @@ public:
 
 	void pushCube(MatrixXf& positions, MatrixXf& colors, vec3 pos, color& color);
 	void pushFace(MatrixXf& positions, MatrixXf& colors, vec3 pos, CUBE_FACE face, color& color);
+	void pushChunkCube(MatrixXf& positions, MatrixXf& colors, Chunk* chunk, vec3 pos);
 
 private:
 	void pushChunk(Chunk* chunk, MatrixXf& positions, MatrixXf& colors);
