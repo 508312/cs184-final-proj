@@ -233,9 +233,22 @@ void WorldSim::mouseRightDragged(double x, double y) {
     camera.move_by(mouse_x - x, y - mouse_y, canonical_view_distance);
 }
 
+inline vec3 WorldSim::getLookBlockPos() {
+    return vec3(ceil(camera.position().x + camera.for_dir().x),
+        ceil(camera.position().y + camera.for_dir().y),
+        ceil(camera.position().z - camera.for_dir().z))
+        -
+        vec3(ceil(spawn_distance * camera.for_dir().x),
+            ceil(spawn_distance * camera.for_dir().y),
+            ceil(spawn_distance * camera.for_dir().z));
+
+}
+
 bool WorldSim::keyCallbackEvent(int key, int scancode, int action,
     int mods) {
     ctrl_down = (bool)(mods & GLFW_MOD_CONTROL);
+
+    std::vector<Chunk*> updated_chunk;
 
     if (action == GLFW_PRESS) {
         switch (key) {
@@ -278,15 +291,9 @@ bool WorldSim::keyCallbackEvent(int key, int scancode, int action,
         case 'F':
             std::cout << spawn_distance;
 
-            world->spawnCell(vec3(ceil(camera.position().x + camera.for_dir().x),
-                ceil(camera.position().y + camera.for_dir().y),
-                ceil(camera.position().z - camera.for_dir().z)) 
-                - 
-                vec3(ceil(spawn_distance * camera.for_dir().x),
-                ceil(spawn_distance * camera.for_dir().y),
-                ceil(spawn_distance * camera.for_dir().z)
-                ),
-            cell{ SAND_COLOR, SAND });
+            world->spawnCell(getLookBlockPos(), cell{ SAND_COLOR, SAND });
+            updated_chunk.push_back(world->getChunkAtBlock(getLookBlockPos()));
+            pushChunks(updated_chunk);
             break;
         case 'n':
         case 'N':
@@ -559,15 +566,23 @@ void WorldSim::drawContents() {
 
     std::vector<mesh*> meshes = getChunkMeshes();
 
+    shader.bind();
+    shader.setUniform("u_model", model);
+    shader.setUniform("u_view_projection", viewProjection);
     for (mesh* mesh : meshes) {
-        shader.bind();
-        shader.setUniform("u_model", model);
-        shader.setUniform("u_view_projection", viewProjection);
         shader.uploadAttrib("in_position", mesh->positions, false);
         shader.uploadAttrib("in_colors", mesh->colors, false);
-
         shader.drawArray(GL_TRIANGLES, 0, mesh->positions.cols());
     }
+
+    MatrixXf lookpos(4, 0);
+    MatrixXf lookcol(4, 0);
+
+    color red = { 255, 0, 0 , 255 };
+    pushCube(lookpos, lookcol, getLookBlockPos(), red);
+    shader.uploadAttrib("in_position", lookpos, false);
+    shader.uploadAttrib("in_colors", lookcol, false);
+    shader.drawArray(GL_LINES, 0, lookpos.cols());
 
     bool draw_bbox_outline = false;
     if (draw_bbox_outline) {

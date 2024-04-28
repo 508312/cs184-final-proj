@@ -32,6 +32,7 @@ class World {
 
 		vec3 getPosInChunk(vec3 pos) { return vec3(umod(pos[0], CHUNK_SIZE), umod(pos[1], CHUNK_SIZE), umod(pos[2], CHUNK_SIZE)); }
 
+		// block pos to chunk
 		int getChunkIndex(vec3 pos) {
 			// todo give name to const
 			pos = getChunkPos(pos);
@@ -43,9 +44,14 @@ class World {
 												std::floor(pos[2] / (float)CHUNK_SIZE)); }
 
 
+		
 		std::vector<Chunk*> getChunks();
 
+		// block pos
+		Chunk* getChunkAtBlock(vec3 pos) { return getChunk(getChunkIndex(pos)); }
 	private:
+		Chunk* getChunk(int idx) { return chunks[idx]; }
+
 		std::unordered_map<int, Chunk*> chunks;
 		std::vector<Chunk*> newly_created;
 };

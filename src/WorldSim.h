@@ -51,6 +51,8 @@ private:
 	void pushChunks(std::vector<Chunk*>& chunks);
 
 	virtual void initGUI(Screen* screen);
+	
+	vec3 getLookBlockPos();
 
 	std::unordered_map<int, mesh> chunk_meshes;
 
