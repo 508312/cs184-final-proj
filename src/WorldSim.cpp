@@ -595,7 +595,7 @@ void WorldSim::pushChunkBbox(Chunk* chunk, MatrixXf& positions, MatrixXf& colors
     }
 }
 
-void WorldSim::pushChunk(Chunk* chunk, MatrixXf& positions, MatrixXf& colors) {
+void WorldSim::pushChunk(Chunk* chunk, mesh& mesh) {
     
     //std::cout << "pushing chunk x y z " << chunk->getChunkPos()[0]
     //    << " " << chunk->getChunkPos()[1]
@@ -607,7 +607,12 @@ void WorldSim::pushChunk(Chunk* chunk, MatrixXf& positions, MatrixXf& colors) {
                 //if (chunk->getCell(vec3(x, y, z)).type != AIR) {
                 //    pushCube(positions, colors, chunk->getChunkPos() * CHUNK_SIZE + vec3(x, y, z), chunk->getCell(vec3(x, y, z)).color);
                 //}
-                pushChunkCube(positions, colors, chunk, vec3(x, y, z));
+                if (chunk->getCell(vec3(x, y, z)).color.a == 255) {
+                    pushChunkCube(mesh.positions, mesh.colors, chunk, vec3(x, y, z));
+                } else {
+                    pushChunkCube(mesh.positions_transparent, mesh.colors_transparent, chunk, vec3(x, y, z));
+                }
+                
             }
         }
     }
@@ -618,7 +623,10 @@ inline void WorldSim::pushChunks(std::vector<Chunk*>& chunks) {
         mesh& mesh = chunk_meshes[world->getChunkIndex(chunk->getChunkPos() * CHUNK_SIZE)];
         mesh.positions = MatrixXf(4, 0);
         mesh.colors = MatrixXf(4, 0);
-        pushChunk(chunk, mesh.positions, mesh.colors);
+
+        mesh.positions_transparent = MatrixXf(4, 0);
+        mesh.colors_transparent = MatrixXf(4, 0);
+        pushChunk(chunk, mesh);
     }
 }
 
@@ -681,6 +689,13 @@ void WorldSim::drawContents() {
         shader.uploadAttrib("in_colors", mesh->colors, false);
         shader.drawArray(GL_TRIANGLES, 0, mesh->positions.cols());
     }
+    glDepthMask(false);
+    for (mesh* mesh : meshes) {
+        shader.uploadAttrib("in_position", mesh->positions_transparent, false);
+        shader.uploadAttrib("in_colors", mesh->colors_transparent, false);
+        shader.drawArray(GL_TRIANGLES, 0, mesh->positions_transparent.cols());
+    }
+    glDepthMask(true);
 
     MatrixXf lookpos(4, 0);
     MatrixXf lookcol(4, 0);

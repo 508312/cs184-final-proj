@@ -15,7 +15,9 @@ using namespace nanogui;
 // calling this mesh but there is probably a better name
 struct mesh {
 	MatrixXf positions;
+	MatrixXf positions_transparent;
 	MatrixXf colors;
+	MatrixXf colors_transparent;
 };
 
 class WorldSim {
@@ -44,7 +46,7 @@ public:
 	void pushChunkCube(MatrixXf& positions, MatrixXf& colors, Chunk* chunk, vec3 pos);
 
 private:
-	void pushChunk(Chunk* chunk, MatrixXf& positions, MatrixXf& colors);
+	void pushChunk(Chunk* chunk, mesh& mesh);
 	void pushChunkBbox(Chunk* chunk, MatrixXf& positions, MatrixXf& colors);
 
 	std::vector<mesh*> getChunkMeshes();
