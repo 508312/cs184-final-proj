@@ -40,7 +40,7 @@ void WorldSim::init() {
     camera_info.hFov = 50;
     camera_info.vFov = 35;
     camera_info.nClip = 0.01;
-    camera_info.fClip = 10000;
+    camera_info.fClip = 100000;
 
     CGL::Vector3D target(8, 10, 40);
 
@@ -72,8 +72,8 @@ void WorldSim::init() {
     color sand = color{ 255, 255, 0, 255 };
     color water = color{ 0, 0, 255, 120 };
     // floor 
-    for (int x = 0; x < CHUNK_SIZE; x++) {
-        for (int z = 0; z < CHUNK_SIZE; z++) {
+    for (int x = 0; x < 50; x++) {
+        for (int z = 0; z < 50; z++) {
             world->spawnCell(vec3(x, 0, z), cell{ SAND_COLOR, SAND });
         }
     }

@@ -34,9 +34,8 @@ class World {
 
 		int getChunkIndex(vec3 pos) {
 			// todo give name to const
-			return std::floor(pos[0] / (float)CHUNK_SIZE) 
-				+ std::floor(pos[1] / (float)CHUNK_SIZE) * WORLD_SIZE 
-				+ std::floor(pos[2] / (float)CHUNK_SIZE) * WORLD_SIZE * WORLD_SIZE;
+			pos = getChunkPos(pos);
+			return pos[0] + pos[1] * WORLD_SIZE + pos[2] * WORLD_SIZE * WORLD_SIZE;
 		}
 
 		vec3 getChunkPos(vec3 pos) { return vec3(std::floor(pos[0] / (float)CHUNK_SIZE),
@@ -48,6 +47,7 @@ class World {
 
 	private:
 		std::unordered_map<int, Chunk*> chunks;
+		std::vector<Chunk*> newly_created;
 };
 
 

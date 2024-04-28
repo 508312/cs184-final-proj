@@ -40,8 +40,9 @@ cell& World::getCell(vec3 pos) {
 void World::createChunkIfDoesntExist(vec3 pos) {
 	int idx = getChunkIndex(pos);
 	if (chunks.find(idx) == chunks.end()) {
-		std::cout << "created " << idx << " at pos " << getChunkPos(pos)[0] << " " << getChunkPos(pos)[1] << " " << getChunkPos(pos)[2] << std::endl;
+		//std::cout << "created " << idx << " at pos " << getChunkPos(pos)[0] << " " << getChunkPos(pos)[1] << " " << getChunkPos(pos)[2] << std::endl;
 		chunks[idx] = new Chunk(this, getChunkPos(pos));
+		newly_created.push_back(chunks[idx]);
 	}
 }
 
@@ -58,13 +59,17 @@ std::vector<Chunk*> World::getChunks() {
 // might be slow as well?
 std::vector<Chunk*> World::update() {
 	std::vector<Chunk*> updated_chunks;
+	newly_created.clear();
 	for (auto entry = chunks.begin(); entry != chunks.end(); entry++) {
 		Chunk* chunk = entry->second;
 		if (chunk->needsUpdate()) {
 			chunk->update();
 			updated_chunks.push_back(chunk);
 		}
-		
+	}	   
+
+	for (Chunk* added_chunk : newly_created) {
+		updated_chunks.push_back(added_chunk);
 	}
 	return updated_chunks;
 }
