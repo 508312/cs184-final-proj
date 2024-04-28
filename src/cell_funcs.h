@@ -10,6 +10,7 @@ inline uint8_t getRandom(uint8_t from, uint8_t to) {
 
 #define SAND_COLOR {getRandom(235, 255), getRandom(220, 255), getRandom(0, 10), 255}
 #define FIRE_COLOR {getRandom(235, 255), getRandom(0, 10), getRandom(0, 5), 255}
+#define STEAM_COLOR {getRandom(120, 136), getRandom(120, 136), getRandom(120, 136), 255}
 
 class Chunk;
 
@@ -18,5 +19,6 @@ extern void updateAir(Chunk* chunk, vec3 pos);
 extern void updateSand(Chunk* chunk, vec3 pos);
 extern void updateWater(Chunk* chunk, vec3 pos);
 extern void updateFire(Chunk* cunk, vec3 pos);
+extern void updateSteam(Chunk* cunk, vec3 pos);
 
 #endif

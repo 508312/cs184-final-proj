@@ -112,8 +112,8 @@ void updateFire(Chunk* chunk, vec3 curr_pos) {
 	for (int i = 0; i < sizeof(dirs); i++) {
 		if (chunk->getCell(curr_pos + dirs[i]).type == WATER) {
 			// if any of the adjacent cells are water, burn out
-			chunk->setCell(curr_pos + dirs[i], cell{ color{ 0, 0, 0, 0 }, AIR });
-			chunk->setCell(curr_pos, cell{ color{ 0, 0, 0, 0 }, AIR });
+			chunk->setCell(curr_pos + dirs[i], cell{ STEAM_COLOR, STEAM });
+			chunk->setCell(curr_pos, cell{ STEAM_COLOR, STEAM });
 			return;
 		}
 		else if (chunk->getCell(curr_pos + dirs[i]).type != AIR && chunk->getCell(curr_pos + dirs[i]).type != FIRE) {
@@ -132,6 +132,31 @@ void updateFire(Chunk* chunk, vec3 curr_pos) {
 		}
 		if (chunk->getCell(curr_pos + vec3(0, -1, 0)).type == AIR) {
 			chunk->swapCells(curr_pos, curr_pos + vec3(0, -1, 0));
+		}
+	}
+}
+
+void updateSteam(Chunk* chunk, vec3 curr_pos) {
+	vec3 dirs[] = {vec3(-1, 1, -1),
+				   vec3(0, 1, -1),
+				   vec3(1, 1, -1),
+				   vec3(1, 1, 0),
+				   vec3(1, 1, 1),
+				   vec3(0, 1, 1),
+				   vec3(-1, 1, 1),
+				   vec3(-1, 1, 0),
+	};
+	if (chunk->getCell(curr_pos + vec3(0, 1, 0)).type == AIR && (float)rand() / RAND_MAX > 0.4) {
+		chunk->swapCells(curr_pos, curr_pos + vec3(0, 1, 0));
+	}
+	else {
+		int size = 8;
+		while (size != 0) {
+			vec3 new_pos = curr_pos + get_random(size, dirs);
+			if (chunk->getCell(new_pos).type == AIR) {
+				chunk->swapCells(curr_pos, new_pos);
+				return;
+			}
 		}
 	}
 }
