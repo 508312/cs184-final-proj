@@ -242,13 +242,12 @@ void WorldSim::mouseRightDragged(double x, double y) {
 }
 
 inline vec3 WorldSim::getLookBlockPos() {
-    return vec3(ceil(camera.position().x + camera.for_dir().x),
-        ceil(camera.position().y + camera.for_dir().y),
-        ceil(camera.position().z - camera.for_dir().z))
-        -
-        vec3(ceil(spawn_distance * camera.for_dir().x),
-            ceil(spawn_distance * camera.for_dir().y),
-            ceil(spawn_distance * camera.for_dir().z));
+    CGL::Vector3D tmp = camera.position() - spawn_distance * camera.for_dir();
+    return vec3(tmp.x, tmp.y, tmp.z);
+}
+
+inline CGL::Vector3D WorldSim::getLookBlockFloat() {
+    return camera.position() - spawn_distance * camera.for_dir();
 
 }
 
@@ -274,19 +273,19 @@ bool WorldSim::keyCallbackEvent(int key, int scancode, int action,
 
         case 'W':
         case 'w':
-            camera.move_by(0, 0, -250, canonical_view_distance);
+            w_held = true;
             break;
         case 'A':
         case 'a':
-            camera.move_by(-250, 0, canonical_view_distance);
+            a_held = true;
             break;
         case 'S':
         case 's':
-            camera.move_by(0, 0, 250, canonical_view_distance);
+            s_held = true;
             break;
         case 'D':
         case 'd':
-            camera.move_by(250, 0, canonical_view_distance);
+            d_held = true;
             break;
         case GLFW_KEY_LEFT_SHIFT:
             camera.move_by(0, -250, canonical_view_distance);
@@ -311,6 +310,27 @@ bool WorldSim::keyCallbackEvent(int key, int scancode, int action,
                 is_paused = true;
             }
             break;
+        }
+    }
+
+    if (action == GLFW_RELEASE) {
+        switch (key) {
+            case 'W':
+            case 'w':
+                w_held = false;
+                break;
+            case 'A':
+            case 'a':
+                a_held = false;
+                break;
+            case 'S':
+            case 's':
+                s_held = false;
+                break;
+            case 'D':
+            case 'd':
+                d_held = false;
+                break;
         }
     }
 
@@ -528,7 +548,7 @@ void WorldSim::pushChunk(Chunk* chunk, MatrixXf& positions, MatrixXf& colors) {
 
 inline void WorldSim::pushChunks(std::vector<Chunk*>& chunks) {
     for (Chunk* chunk : chunks) {
-        mesh& mesh = chunk_meshes[chunk->getIndex(chunk->getChunkPos())];
+        mesh& mesh = chunk_meshes[world->getChunkIndex(chunk->getChunkPos() * 32)];
         mesh.positions = MatrixXf(4, 0);
         mesh.colors = MatrixXf(4, 0);
         pushChunk(chunk, mesh.positions, mesh.colors);
@@ -541,6 +561,18 @@ void WorldSim::updateWorld() {
 }
 
 void WorldSim::simulate() {
+    if (w_held) {
+        camera.move_by(0, 0, -100, canonical_view_distance);
+    }
+    if (a_held) {
+        camera.move_by(-100, 0, canonical_view_distance);
+    }
+    if (s_held) {
+        camera.move_by(0, 0, 100, canonical_view_distance);
+    }
+    if (d_held) {
+        camera.move_by(100, 0, canonical_view_distance);
+    }
     if (!is_paused) {
         /*
         world->spawnCell(vec3(3, 10, 3), cell{ color{ 0, 0, 0, 0 }, SAND });
@@ -585,7 +617,6 @@ void WorldSim::drawContents() {
 
     MatrixXf lookpos(4, 0);
     MatrixXf lookcol(4, 0);
-
     color red = { 255, 0, 0 , 255 };
     pushCube(lookpos, lookcol, getLookBlockPos(), red);
     shader.uploadAttrib("in_position", lookpos, false);
