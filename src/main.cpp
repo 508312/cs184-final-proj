@@ -56,7 +56,7 @@ void createGLContexts() {
   glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
   // Create a GLFWwindow object
-  window = glfwCreateWindow(800, 800, "Cloth Simulator", nullptr, nullptr);
+  window = glfwCreateWindow(1024, 800, "Falling Sand", nullptr, nullptr);
   if (window == nullptr) {
     std::cout << "Failed to create GLFW window" << std::endl;
     glfwTerminate();
@@ -170,7 +170,6 @@ bool find_project_root(const std::vector<std::string>& search_paths, std::string
 
 int main(int argc, char **argv) {
   // Attempt to find project root
-
   srand(80085);
 
   std::vector<std::string> search_paths = {
