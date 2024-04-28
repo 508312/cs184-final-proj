@@ -668,8 +668,6 @@ inline std::vector<mesh*> WorldSim::getChunkMeshes() {
 
 void WorldSim::drawContents() {
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
                             
     Matrix4f model;
@@ -684,12 +682,15 @@ void WorldSim::drawContents() {
     shader.bind();
     shader.setUniform("u_model", model);
     shader.setUniform("u_view_projection", viewProjection);
+    glDisable(GL_BLEND);
     for (mesh* mesh : meshes) {
         shader.uploadAttrib("in_position", mesh->positions, false);
         shader.uploadAttrib("in_colors", mesh->colors, false);
         shader.drawArray(GL_TRIANGLES, 0, mesh->positions.cols());
     }
     glDepthMask(false);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     for (mesh* mesh : meshes) {
         shader.uploadAttrib("in_position", mesh->positions_transparent, false);
         shader.uploadAttrib("in_colors", mesh->colors_transparent, false);
