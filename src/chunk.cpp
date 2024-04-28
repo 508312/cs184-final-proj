@@ -134,3 +134,8 @@ void Chunk::simulate(int simulation_steps) {
         update();
     }
 }
+
+
+void Chunk::resetDirty() {
+    dirty_cells.reset();
+}
