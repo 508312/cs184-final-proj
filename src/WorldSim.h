@@ -88,6 +88,7 @@ private:
 	double scroll_rate;
 	double min_scroll_distance;
 	double max_scroll_distance;
+	double move_constant;
 
 	// Screen methods
 	Screen* screen;
