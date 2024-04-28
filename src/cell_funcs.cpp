@@ -98,6 +98,7 @@ void updateFire(Chunk* chunk, vec3 curr_pos) {
 							 vec3(0, 0, 1),
 							 vec3(-1, 0, 1),
 							 vec3(-1, 0, 0),
+							 vec3(0, 1, 0),
 							 vec3(-1, 1, -1),
 							 vec3(0, 1, -1),
 							 vec3(1, 1, -1),
@@ -109,7 +110,7 @@ void updateFire(Chunk* chunk, vec3 curr_pos) {
 	};
 
 	std::vector<vec3> burnable;
-	for (int i = 0; i < sizeof(dirs); i++) {
+	for (int i = 0; i < sizeof(dirs) / sizeof(vec3); i++) {
 		if (chunk->getCell(curr_pos + dirs[i]).type == WATER) {
 			// if any of the adjacent cells are water, burn out
 			chunk->setCell(curr_pos + dirs[i], cell{ STEAM_COLOR, STEAM });
