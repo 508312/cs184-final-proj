@@ -114,7 +114,7 @@ private:
 
 	bool is_alive = true;
 
-	Vector2i default_window_size = Vector2i(1024, 800);
+	Vector2i default_window_size = Vector2i(800, 800);
 };
 
 

@@ -56,7 +56,7 @@ void createGLContexts() {
   glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
   // Create a GLFWwindow object
-  window = glfwCreateWindow(1024, 800, "Falling Sand", nullptr, nullptr);
+  window = glfwCreateWindow(800, 800, "Falling Sand", nullptr, nullptr);
   if (window == nullptr) {
     std::cout << "Failed to create GLFW window" << std::endl;
     glfwTerminate();
