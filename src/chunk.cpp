@@ -40,7 +40,7 @@ void Chunk::update() {
     }
     */
 
-    //std::cout << "updating chunk " << getChunkPos().x << " " << getChunkPos().y << " " << getChunkPos().z
+    // std::cout << "updating chunk " << getChunkPos().x << " " << getChunkPos().y << " " << getChunkPos().z
     //<< " from " << bbox_from.x << " " << bbox_from.y << " " << bbox_from.z
     //<< " to " << bbox_to.x << " " << bbox_to.y << " " << bbox_to.z << std::endl;
 

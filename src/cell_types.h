@@ -10,7 +10,8 @@ class Chunk;
 CELL(WALL, PROPERTY_EMPTY, updateError) \
 CELL(AIR, PROPERTY_EMPTY, updateAir) \
 CELL(SAND, PROPERTY_EMPTY, updateSand) \
-CELL(WATER, PROPERTY_EMPTY, updateWater)
+CELL(WATER, PROPERTY_EMPTY, updateWater) \
+CELL(FIRE, PROPERTY_EMPTY, updateFire)
 
 #define CELL(m, p, f) m,
 enum CellType {

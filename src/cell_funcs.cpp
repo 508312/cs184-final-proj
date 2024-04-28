@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 //#include <CGL/vector3D.h>
 #include <random>
 #include "intvec3.h"
@@ -75,6 +76,60 @@ void updateWater(Chunk* chunk, vec3 curr_pos) {
 				chunk->swapCells(curr_pos, new_pos);
 				return;
 			}
+		}
+	}
+}
+
+void updateFire(Chunk* chunk, vec3 curr_pos) {
+	vec3 dirs[] = { vec3(-1, -1, -1),
+							 vec3(0, -1, -1),
+							 vec3(1, -1, -1),
+							 vec3(1, -1, 0),
+							 vec3(1, -1, 1),
+							 vec3(0, -1, 1),
+							 vec3(-1, -1, 1),
+							 vec3(-1, -1, 0),
+							 vec3(-1, 0, -1),
+							 vec3(0, 0, -1),
+							 vec3(1, 0, -1),
+							 vec3(1, 0, 0),
+							 vec3(1, 0, 1),
+							 vec3(0, 0, 1),
+							 vec3(-1, 0, 1),
+							 vec3(-1, 0, 0),
+							 vec3(-1, 1, -1),
+							 vec3(0, 1, -1),
+							 vec3(1, 1, -1),
+							 vec3(1, 1, 0),
+							 vec3(1, 1, 1),
+							 vec3(0, 1, 1),
+							 vec3(-1, 1, 1),
+							 vec3(-1, 1, 0),
+	};
+
+	std::vector<vec3> burnable;
+	for (int i = 0; i < sizeof(dirs); i++) {
+		if (chunk->getCell(curr_pos + dirs[i]).type == WATER) {
+			// if any of the adjacent cells are water, burn out
+			chunk->setCell(curr_pos, cell{ color{ 0, 0, 0, 0 }, AIR });
+			return;
+		}
+		else if (chunk->getCell(curr_pos + dirs[i]).type != AIR && chunk->getCell(curr_pos + dirs[i]).type != FIRE) {
+			burnable.push_back(dirs[i]);
+		}
+	}
+
+	// if there is anything to burn in adjacent cells, burn and spread
+	// otherwise, chance to burn out
+	if (burnable.size() == 0 && (float) rand() / RAND_MAX > 0.2) {
+		chunk->setCell(curr_pos, cell{ color{ 0, 0, 0, 0 }, AIR });
+	}
+	else {
+		for (int i = 0; i < burnable.size(); i++) {
+			chunk->setCell(curr_pos, cell{ FIRE_COLOR, FIRE });
+		}
+		if (chunk->getCell(curr_pos + vec3(0, -1, 0)).type == AIR) {
+			chunk->swapCells(curr_pos, curr_pos + vec3(0, -1, 0));
 		}
 	}
 }
