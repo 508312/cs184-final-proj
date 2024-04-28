@@ -71,5 +71,9 @@ std::vector<Chunk*> World::update() {
 	for (Chunk* added_chunk : newly_created) {
 		updated_chunks.push_back(added_chunk);
 	}
+
+	for (Chunk* chunk: updated_chunks) {
+		chunk->resetDirty();
+	}
 	return updated_chunks;
 }

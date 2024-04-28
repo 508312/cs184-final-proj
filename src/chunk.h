@@ -6,7 +6,7 @@
 #include <array>
 
 // Size of a side of a chunk. Should be a power of 2.
-#define CHUNK_SIZE 16
+#define CHUNK_SIZE 32
 
 class World;
 
@@ -31,6 +31,8 @@ class Chunk {
 
 		vec3 getBboxFrom() { return bbox_from; }
 		vec3 getBboxTo() { return bbox_to; }
+
+		void resetDirty();
 
 	private:
 		void resetBbox();
