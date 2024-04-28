@@ -7,7 +7,7 @@
 #include "chunk.h"
 
 void updateError(Chunk* chunk, vec3 pos) {
-	std::cout << "UPDATING ELEMENT WHICH YOU SHOULD NOT " << std::endl;
+	//std::cout << "UPDATING ELEMENT WHICH YOU SHOULD NOT " << std::endl;
 	return;
 }
 

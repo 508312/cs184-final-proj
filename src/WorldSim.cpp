@@ -77,9 +77,10 @@ void WorldSim::init() {
     color sand = color{ 255, 255, 0, 255 };
     color water = color{ 0, 0, 255, 120 };
     // floor 
-    for (int x = 0; x < 50; x++) {
-        for (int z = 0; z < 50; z++) {
+    for (int x = 0; x < 100; x++) {
+        for (int z = 0; z < 100; z++) {
             world->spawnCell(vec3(x, 0, z), cell{ SAND_COLOR, SAND });
+            //world->spawnCell(vec3(x, -1, z), cell{ SAND_COLOR, WALL });
         }
     }
 
