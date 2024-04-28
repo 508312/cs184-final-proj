@@ -12,6 +12,12 @@
 
 using namespace nanogui;
 
+// calling this mesh but there is probably a better name
+struct mesh {
+	MatrixXf positions;
+	MatrixXf colors;
+};
+
 class WorldSim {
 public:
 	WorldSim(std::string project_root, Screen* screen);
@@ -40,7 +46,13 @@ private:
 	void pushChunk(Chunk* chunk, MatrixXf& positions, MatrixXf& colors);
 	void pushChunkBbox(Chunk* chunk, MatrixXf& positions, MatrixXf& colors);
 
+	std::vector<mesh*> getChunkMeshes();
+	void updateWorld();
+	void pushChunks(std::vector<Chunk*>& chunks);
+
 	virtual void initGUI(Screen* screen);
+
+	std::unordered_map<int, mesh> chunk_meshes;
 
 	GLShader shader;
 	GLShader shaderwater;

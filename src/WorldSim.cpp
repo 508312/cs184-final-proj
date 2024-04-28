@@ -96,6 +96,9 @@ void WorldSim::init() {
         world->spawnCell(vec3(8, y, 8), cell{ water, WATER });
     }
 
+    std::vector<Chunk*> chunks = world->getChunks();
+    pushChunks(chunks);
+
     initShader();
 }
 
@@ -238,10 +241,10 @@ bool WorldSim::keyCallbackEvent(int key, int scancode, int action,
             is_alive = false;
             break;
         case 'r':
-            world->update();
+            updateWorld();
             break;
         case 'R':
-            world->update();
+            updateWorld();
             break;
         case ' ':
             resetCamera();
@@ -491,14 +494,37 @@ void WorldSim::pushChunk(Chunk* chunk, MatrixXf& positions, MatrixXf& colors) {
     }
 }
 
+inline void WorldSim::pushChunks(std::vector<Chunk*>& chunks) {
+    for (Chunk* chunk : chunks) {
+        mesh& mesh = chunk_meshes[chunk->getIndex(chunk->getChunkPos())];
+        mesh.positions = MatrixXf(4, 0);
+        mesh.colors = MatrixXf(4, 0);
+        pushChunk(chunk, mesh.positions, mesh.colors);
+    }
+}
+
+void WorldSim::updateWorld() {
+    std::vector<Chunk*> updated_chunks = world->update();
+    pushChunks(updated_chunks);
+}
+
 void WorldSim::simulate() {
     if (!is_paused) {
         /*
         world->spawnCell(vec3(3, 10, 3), cell{ color{ 0, 0, 0, 0 }, SAND });
         world->spawnCell(vec3(10, 10, 3), cell{ color{ 0, 0, 0, 0 }, WATER });
         */
-        world->update();
+        updateWorld();
     }
+}
+
+inline std::vector<mesh*> WorldSim::getChunkMeshes() {
+    std::vector<mesh*> ret;
+    int i = 0;
+    for (auto entry = chunk_meshes.begin(); entry != chunk_meshes.end(); entry++) {
+        ret.push_back(&entry->second);
+    }
+    return ret;
 }
 
 void WorldSim::drawContents() {
@@ -514,26 +540,23 @@ void WorldSim::drawContents() {
     Matrix4f projection = getProjectionMatrix();
     Matrix4f viewProjection = projection * view;
 
-    MatrixXf positions(4, 0);
-    MatrixXf colors(4, 0);
+    std::vector<mesh*> meshes = getChunkMeshes();
 
-    std::vector<Chunk*> chunks = world->getChunks();
+    for (mesh* mesh : meshes) {
+        shader.bind();
+        shader.setUniform("u_model", model);
+        shader.setUniform("u_view_projection", viewProjection);
+        shader.uploadAttrib("in_position", mesh->positions, false);
+        shader.uploadAttrib("in_colors", mesh->colors, false);
 
-    for (Chunk* chunk : chunks) {
-        pushChunk(chunk, positions, colors);
+        shader.drawArray(GL_TRIANGLES, 0, mesh->positions.cols());
     }
-    shader.bind();
-    shader.setUniform("u_model", model);
-    shader.setUniform("u_view_projection", viewProjection);
-    shader.uploadAttrib("in_position", positions, false);
-    shader.uploadAttrib("in_colors", colors, false);
-
-    shader.drawArray(GL_TRIANGLES, 0, positions.cols());
 
     bool draw_bbox_outline = false;
     if (draw_bbox_outline) {
-        positions(4, 0);
-        colors(4, 0);
+        MatrixXf positions(4, 0);
+        MatrixXf colors(4, 0);
+        std::vector<Chunk*> chunks = world->getChunks();
 
         for (Chunk* chunk : chunks) {
             pushChunkBbox(chunk, positions, colors);
