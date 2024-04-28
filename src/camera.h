@@ -50,6 +50,7 @@ public:
     while d is in world-space coordinates (like pos/dir/up).
   */
   void move_by(const double dx, const double dy, const double d);
+  void move_by(const double dx, const double dy, const double dz, const double d);
 
   /*
     Move the specified amount along the view axis.
@@ -64,6 +65,7 @@ public:
   Vector3D position() const { return pos; }
   Vector3D view_point() const { return targetPos; }
   Vector3D up_dir() const { return c2w[1]; }
+  Vector3D for_dir() const { return c2w[2]; }
   double v_fov() const { return vFov; }
   double aspect_ratio() const { return ar; }
   double near_clip() const { return nClip; }

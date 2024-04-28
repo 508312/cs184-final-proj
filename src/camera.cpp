@@ -78,6 +78,14 @@ void Camera::move_by(const double dx, const double dy, const double d) {
   targetPos += displacement;
 }
 
+void Camera::move_by(const double dx, const double dy, const double dz, const double d) {
+  const double scaleFactor = d / screenDist;
+  const Vector3D &displacement =
+      c2w[0] * (dx * scaleFactor) + c2w[1] * (dy * scaleFactor) + c2w[2] * (dz * scaleFactor);
+  pos += displacement;
+  targetPos += displacement;
+}
+
 void Camera::move_forward(const double dist) {
   double newR = min(max(r - dist, minR), maxR);
   pos = targetPos + ((pos - targetPos) * (newR / r));

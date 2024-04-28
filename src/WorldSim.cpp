@@ -2,8 +2,10 @@
 #include <glad/glad.h>
 
 #include <CGL/vector3D.h>
+#include <iostream>
 #include <nanogui/nanogui.h>
 
+#include "GLFW/glfw3.h"
 #include "camera.h"
 #include "misc/camera_info.h"
 #include "misc/file_utils.h"
@@ -241,13 +243,8 @@ bool WorldSim::keyCallbackEvent(int key, int scancode, int action,
             is_alive = false;
             break;
         case 'r':
-            updateWorld();
-            break;
         case 'R':
             updateWorld();
-            break;
-        case ' ':
-            resetCamera();
             break;
         case 'p':
         case 'P':
@@ -256,21 +253,41 @@ bool WorldSim::keyCallbackEvent(int key, int scancode, int action,
 
         case 'W':
         case 'w':
-            camera.move_by(0, 500, canonical_view_distance);
+            camera.move_by(0, 0, -250, canonical_view_distance);
             break;
         case 'A':
         case 'a':
-            camera.move_by(-500, 0, canonical_view_distance);
+            camera.move_by(-250, 0, canonical_view_distance);
             break;
         case 'S':
         case 's':
-            camera.move_by(0, -500, canonical_view_distance);
+            camera.move_by(0, 0, 250, canonical_view_distance);
             break;
         case 'D':
         case 'd':
-            camera.move_by(500, 0, canonical_view_distance);
+            camera.move_by(250, 0, canonical_view_distance);
+            break;
+        case GLFW_KEY_LEFT_SHIFT:
+            camera.move_by(0, -250, canonical_view_distance);
+            break;
+        case ' ':
+            camera.move_by(0, 250, canonical_view_distance);
             break;
 
+        case 'f':
+        case 'F':
+            std::cout << spawn_distance;
+
+            world->spawnCell(vec3(ceil(camera.position().x + camera.for_dir().x),
+                ceil(camera.position().y + camera.for_dir().y),
+                ceil(camera.position().z - camera.for_dir().z)) 
+                - 
+                vec3(ceil(spawn_distance * camera.for_dir().x),
+                ceil(spawn_distance * camera.for_dir().y),
+                ceil(spawn_distance * camera.for_dir().z)
+                ),
+            cell{ SAND_COLOR, SAND });
+            break;
         case 'n':
         case 'N':
             if (is_paused) {
@@ -290,8 +307,8 @@ bool WorldSim::dropCallbackEvent(int count, const char** filenames) {
 }
 
 bool WorldSim::scrollCallbackEvent(double x, double y) {
-    camera.move_forward(y * scroll_rate);   
-    spawn_distance -= ceil(y*scroll_rate);
+    //camera.move_forward(y * scroll_rate);   
+    spawn_distance = fmax(5.0, spawn_distance - ceil(y*scroll_rate));
     return true;
 }
 

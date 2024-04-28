@@ -54,7 +54,8 @@ void Chunk::update() {
                 if (dirty_cells.test(getIndex(vec3(x, y, z))) == false) {
                     type2func[getCell(vec3(x, y, z)).type](this, vec3(x, y, z));
                 } else {
-                    expandBbox(vec3(x, y, z));
+                    vec3 d = vec3(x, y, z);
+                    expandBbox(d);
                 }
             }
         }
