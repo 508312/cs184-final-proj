@@ -567,14 +567,21 @@ void WorldSim::pushChunk(Chunk* chunk, MatrixXf& positions, MatrixXf& colors) {
     for (int x = 0; x < CHUNK_SIZE; x++) {
         for (int y = 0; y < CHUNK_SIZE; y++) {
             for (int z = 0; z < CHUNK_SIZE; z++) {
+                auto color = getColorFromChunk(chunk, x, y, z);
+                if (color.a == 0) {
+                    continue;
+                }
                 if (chunk->getCell(vec3(x, y, z)).type != AIR) {
-                    pushCube(positions, colors, chunk->getChunkPos() * CHUNK_SIZE + vec3(x, y, z), chunk->getCell(vec3(x, y, z)).color);
+                    pushCube(positions, colors, chunk->getChunkPos() * CHUNK_SIZE + vec3(x, y, z), color);
                 }
             }
         }
     }
 }
 
+inline color& WorldSim::getColorFromChunk(Chunk* chunk, int x, int y, int z) {
+    return chunk->getCell(vec3(x, y, z)).color;
+}
 inline void WorldSim::pushChunks(std::vector<Chunk*>& chunks) {
     for (Chunk* chunk : chunks) {
         mesh& mesh = chunk_meshes[world->getChunkIndex(chunk->getChunkPos() * 32)];

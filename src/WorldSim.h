@@ -48,6 +48,7 @@ private:
 
 	std::vector<mesh*> getChunkMeshes();
 	void updateWorld();
+	color& getColorFromChunk(Chunk* chunk, int x, int y, int z);
 	void pushChunks(std::vector<Chunk*>& chunks);
 
 	virtual void initGUI(Screen* screen);
