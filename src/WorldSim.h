@@ -53,6 +53,7 @@ private:
 	virtual void initGUI(Screen* screen);
 	
 	vec3 getLookBlockPos();
+	CGL::Vector3D getLookBlockFloat();
 
 	std::unordered_map<int, mesh> chunk_meshes;
 
@@ -115,6 +116,11 @@ private:
 	int screen_h;
 
 	bool is_alive = true;
+
+	bool w_held = false;
+	bool a_held = false;
+	bool s_held = false;
+	bool d_held = false;
 
 	Vector2i default_window_size = Vector2i(800, 800);
 };
