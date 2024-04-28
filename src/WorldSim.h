@@ -58,7 +58,7 @@ private:
 	std::unordered_map<int, mesh> chunk_meshes;
 
 	GLShader shader;
-	GLShader shaderwater;
+	//GLShader shaderwater;
 
 	World* world;
 
@@ -86,6 +86,8 @@ private:
 	double max_view_distance;
 
 	double scroll_rate;
+	double min_scroll_distance;
+	double max_scroll_distance;
 
 	// Screen methods
 	Screen* screen;

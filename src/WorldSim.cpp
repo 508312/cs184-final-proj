@@ -27,7 +27,7 @@ WorldSim::WorldSim(std::string project_root, Screen* screen) {
 
 WorldSim::~WorldSim() {
     shader.free();
-    shaderwater.free();
+    //shaderwater.free();
 }
 
 void WorldSim::init() {
@@ -49,7 +49,9 @@ void WorldSim::init() {
     CGL::Vector3D c_dir(0., 0., 0.);
 
     canonical_view_distance = 2.0f * 0.9;
-    scroll_rate = canonical_view_distance / 10;
+    scroll_rate = canonical_view_distance / 1.3;
+    min_scroll_distance = canonical_view_distance*2;
+    max_scroll_distance = canonical_view_distance*20;
 
     view_distance = canonical_view_distance * 2;
     min_view_distance = canonical_view_distance / 10.0;
@@ -117,7 +119,7 @@ void WorldSim::init() {
 
 void WorldSim::initShader() {
     shader.initFromFiles("default", project_root + "\\shaders\\default.vert", project_root + "\\shaders\\default.frag");
-    shaderwater.initFromFiles("default", project_root + "\\shaders\\water.vert", project_root + "\\shaders\\water.frag");
+    //shaderwater.initFromFiles("default", project_root + "\\shaders\\water.vert", project_root + "\\shaders\\water.frag");
 }
 
 
@@ -368,7 +370,8 @@ bool WorldSim::dropCallbackEvent(int count, const char** filenames) {
 
 bool WorldSim::scrollCallbackEvent(double x, double y) {
     //camera.move_forward(y * scroll_rate);   
-    spawn_distance = fmax(5.0, spawn_distance - ceil(y*scroll_rate));
+    spawn_distance = fmax(min_scroll_distance, spawn_distance - ceil(y*scroll_rate));
+    spawn_distance = fmin(max_scroll_distance, spawn_distance);
     return true;
 }
 

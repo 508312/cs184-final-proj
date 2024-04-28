@@ -105,6 +105,12 @@ void setGLFWCallbacks() {
                 app->keyCallbackEvent(key, scancode, action, mods);
             }
         });
+    glfwSetScrollCallback(
+        window, [](GLFWwindow* window, double xoffset, double yoffset) {
+            if (!screen->scrollCallbackEvent(xoffset, yoffset)) {
+                app->scrollCallbackEvent(xoffset, yoffset);
+            }
+        });
 
     glfwSetCharCallback(window, [](GLFWwindow*, unsigned int codepoint) {
         screen->charCallbackEvent(codepoint);
