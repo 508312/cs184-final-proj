@@ -290,6 +290,17 @@ bool WorldSim::keyCallbackEvent(int key, int scancode, int action,
         case 'd':
             d_held = true;
             break;
+        case GLFW_KEY_UP:
+            w_held = true;
+            break;
+        case GLFW_KEY_DOWN:
+            s_held = true;
+            break;
+        case GLFW_KEY_LEFT:
+            a_held = true;
+            break;
+        case GLFW_KEY_RIGHT:
+            d_held = true;
         case GLFW_KEY_LEFT_SHIFT:
             camera.move_by(0, -250, canonical_view_distance);
             break;
@@ -334,6 +345,17 @@ bool WorldSim::keyCallbackEvent(int key, int scancode, int action,
             case 'd':
                 d_held = false;
                 break;
+            case GLFW_KEY_UP:
+                w_held = false;
+                break;
+            case GLFW_KEY_DOWN:
+                s_held = false;
+                break;
+            case GLFW_KEY_LEFT:
+                a_held = false;
+                break;
+            case GLFW_KEY_RIGHT:
+                d_held = false;
         }
     }
 
