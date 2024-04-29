@@ -429,16 +429,29 @@ void WorldSim::initGUI(Screen* screen) {
             });
     }
 
-    new Label(window, "Brush Settings", "sans-bold");
+    new Label(window, "Brush Size", "sans-bold");
 
     {
         Widget* panel = new Widget(window);
         panel->setLayout(
             new BoxLayout(Orientation::Horizontal, Alignment::Middle, 0, 5));
 
-        Slider* slider = new Slider(window);
-        slider->setValue(1.0f);
-        slider->setFixedWidth(105);
+        Slider* slider = new Slider(panel);
+        slider->setValue((float) brush_size / 10);
+        slider->setFixedWidth(125);
+
+        TextBox* size = new TextBox(panel);
+        size->setFixedWidth(50);
+        size->setValue(std::to_string(brush_size));
+
+        slider->setCallback([size](float value) {
+            int intValue = static_cast<int>(value * 9.0f + 1);
+            size->setValue(std::to_string(intValue));
+            });
+
+        slider->setFinalCallback([&](float value) {
+            brush_size = static_cast<int>(value * 9.0f + 1);
+            });
     }
 }
 
