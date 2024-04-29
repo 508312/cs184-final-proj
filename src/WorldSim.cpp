@@ -271,11 +271,11 @@ void WorldSim::spawnKeyHeld() {
     std::vector<Chunk*> updated_chunk;
     vec3 temp = getLookBlockPos();
     if (brush_size > 1) {
-        for (int dz = temp.z - brush_size - 1 /2; dz <= temp.z + brush_size - 1 /2; dz++) {
-            for (int dy = temp.y - brush_size - 1 /2; dy <= temp.y + brush_size - 1 /2; dy++) {
-                for (int dx = temp.x - brush_size - 1 /2; dx <= temp.x + brush_size - 1 /2; dx++) {
+        for (int dz = temp.z - (brush_size - 1) /2; dz <= temp.z + (brush_size - 1) /2; dz++) {
+            for (int dy = temp.y - (brush_size - 1) /2; dy <= temp.y + (brush_size - 1) /2; dy++) {
+                for (int dx = temp.x - (brush_size - 1) /2; dx <= temp.x + (brush_size - 1) /2; dx++) {
                     world->spawnCell(vec3(dx,dy,dz), cell{ curr_color, curr_type });
-                    updated_chunk.push_back(world->getChunkAtBlock(getLookBlockPos()));
+                    updated_chunk.push_back(world->getChunkAtBlock(vec3(dx,dy,dz)));
                 }
             }
         }
