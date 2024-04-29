@@ -115,8 +115,8 @@ private:
 
 	// Screen attributes
 
-	int mouse_x;
-	int mouse_y;
+	double mouse_x;
+	double mouse_y;
 
 	int screen_w;
 	int screen_h;

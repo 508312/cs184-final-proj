@@ -80,7 +80,7 @@ void WorldSim::init() {
     for (int x = 0; x < 100; x++) {
         for (int z = 0; z < 100; z++) {
             world->spawnCell(vec3(x, 0, z), cell{ SAND_COLOR, SAND });
-            //world->spawnCell(vec3(x, -1, z), cell{ SAND_COLOR, WALL });
+            world->spawnCell(vec3(x, -1, z), cell{ SAND_COLOR, WALL });
         }
     }
 
@@ -88,7 +88,7 @@ void WorldSim::init() {
         for (int y = 20; y < 25; y++) {
             for (int z = 20; z < 25; z++) {
                 world->spawnCell(vec3(x, y, z), cell{ water, WATER });
-                //world->spawnCell(vec3(x, -1, z), cell{ SAND_COLOR, WALL });
+                world->spawnCell(vec3(x, -1, z), cell{ SAND_COLOR, WALL });
             }
         }
     }
@@ -240,7 +240,16 @@ bool WorldSim::mouseButtonCallbackEvent(int button, int action,
     return false;
 }
 
-void WorldSim::mouseMoved(double x, double y) { y = screen_h - y; }
+void WorldSim::mouseMoved(double x, double y) {
+    std::cout << x << ' ' << y << '\n';
+    std::cout << mouse_x << ' ' << mouse_y << '\n';
+
+    float dx = x - mouse_x;
+    float dy = y - mouse_y;
+    float sensitivity = 0.01f;
+    camera.rotate_by(-dy * sensitivity, -dx * sensitivity); 
+
+}
 
 void WorldSim::mouseLeftDragged(double x, double y) {
     float dx = x - mouse_x;
