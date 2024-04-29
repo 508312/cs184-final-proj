@@ -275,7 +275,9 @@ void WorldSim::spawnKeyHeld() {
             for (int dy = temp.y - (brush_size - 1) /2; dy <= temp.y + (brush_size - 1) /2; dy++) {
                 for (int dx = temp.x - (brush_size - 1) /2; dx <= temp.x + (brush_size - 1) /2; dx++) {
                     world->spawnCell(vec3(dx,dy,dz), cell{ curr_color, curr_type });
-                    updated_chunk.push_back(world->getChunkAtBlock(vec3(dx,dy,dz)));
+                    if (std::find(updated_chunk.begin(), updated_chunk.end(), world->getChunkAtBlock(vec3(dx, dy, dz))) == updated_chunk.end()) {
+                        updated_chunk.push_back(world->getChunkAtBlock(vec3(dx, dy, dz)));
+                    }
                 }
             }
         }
