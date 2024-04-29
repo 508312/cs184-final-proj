@@ -57,6 +57,7 @@ private:
 	
 	vec3 getLookBlockPos();
 	CGL::Vector3D getLookBlockFloat();
+	void spawnKeyHeld();
 
 	std::unordered_map<int, mesh> chunk_meshes;
 

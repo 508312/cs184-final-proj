@@ -4,6 +4,7 @@
 #include <CGL/vector3D.h>
 #include <iostream>
 #include <nanogui/nanogui.h>
+#include <utility>
 
 #include "GLFW/glfw3.h"
 #include "camera.h"
@@ -231,12 +232,12 @@ bool WorldSim::mouseButtonCallbackEvent(int button, int action,
 }
 
 void WorldSim::mouseMoved(double x, double y) {
-    std::cout << x << ' ' << y << '\n';
-    std::cout << mouse_x << ' ' << mouse_y << '\n';
+    //std::cout << x << ' ' << y << '\n';
+    //std::cout << mouse_x << ' ' << mouse_y << '\n';
 
     float dx = x - mouse_x;
     float dy = y - mouse_y;
-    float sensitivity = 0.01f;
+    float sensitivity = 0.02f;
     camera.rotate_by(-dy * sensitivity, -dx * sensitivity); 
 
 }
@@ -264,6 +265,26 @@ inline vec3 WorldSim::getLookBlockPos() {
 inline CGL::Vector3D WorldSim::getLookBlockFloat() {
     return camera.position() - spawn_distance * camera.for_dir();
 
+}
+
+void WorldSim::spawnKeyHeld() {
+    std::vector<Chunk*> updated_chunk;
+    vec3 temp = getLookBlockPos();
+    if (brush_size > 1) {
+        for (int dz = temp.z - brush_size - 1 /2; dz <= temp.z + brush_size - 1 /2; dz++) {
+            for (int dy = temp.y - brush_size - 1 /2; dy <= temp.y + brush_size - 1 /2; dy++) {
+                for (int dx = temp.x - brush_size - 1 /2; dx <= temp.x + brush_size - 1 /2; dx++) {
+                    world->spawnCell(vec3(dx,dy,dz), cell{ curr_color, curr_type });
+                    updated_chunk.push_back(world->getChunkAtBlock(getLookBlockPos()));
+                }
+            }
+        }
+    }
+    else {
+        world->spawnCell(temp, cell{ curr_color, curr_type });
+        updated_chunk.push_back(world->getChunkAtBlock(getLookBlockPos()));
+    }
+    pushChunks(updated_chunk);
 }
 
 bool WorldSim::keyCallbackEvent(int key, int scancode, int action,
@@ -322,11 +343,9 @@ bool WorldSim::keyCallbackEvent(int key, int scancode, int action,
 
         case 'f':
         case 'F':
-            std::cout << spawn_distance;
+            //std::cout << spawn_distance;
 
-            world->spawnCell(getLookBlockPos(), cell{ curr_color, curr_type });
-            updated_chunk.push_back(world->getChunkAtBlock(getLookBlockPos()));
-            pushChunks(updated_chunk);
+            spawnKeyHeld();
             break;
         case 'n':
         case 'N':
