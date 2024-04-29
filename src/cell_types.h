@@ -1,7 +1,7 @@
 #ifndef CELL_TYPES_H
 #define CELL_TYPES_H
 
-//#include "properties.h"
+#include "properties.h"
 #include "cell_funcs.h"
 #include "intvec3.h"
 class Chunk;
@@ -9,7 +9,7 @@ class Chunk;
 #define CELLS \
 CELL(WALL, PROPERTY_EMPTY, updateError) \
 CELL(AIR, PROPERTY_EMPTY, updateAir) \
-CELL(SAND, PROPERTY_EMPTY, updateSand) \
+CELL(SAND, PROPERTY_EMPTY | PROPERTY_BURNABLE, updateSand) \
 CELL(WATER, PROPERTY_EMPTY, updateWater) \
 CELL(FIRE, PROPERTY_EMPTY, updateFire) \
 CELL(STEAM, PROPERTY_EMPTY, updateSteam)
@@ -26,13 +26,11 @@ constexpr static void (*type2func[]) (Chunk*, vec3) = {
 };
 #undef CELL
 
-/*
 #define CELL(m, p, f) p,
-constexpr static property type2prop = {
+constexpr static property type2prop[] = {
 	CELLS
 };
 #undef CELL
-*/
 
 // Usage: to add new cell type add MAT(NAME, PROPERTIES, SIM_FUNC)
 
