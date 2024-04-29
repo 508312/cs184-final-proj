@@ -9,8 +9,9 @@ inline uint8_t getRandom(uint8_t from, uint8_t to) {
 };
 
 #define SAND_COLOR {getRandom(235, 255), getRandom(220, 255), getRandom(0, 10), 255}
+#define WATER_COLOR {0, 0, 255, 50}
 #define FIRE_COLOR {getRandom(235, 255), getRandom(0, 10), getRandom(0, 5), 255}
-#define STEAM_COLOR {getRandom(120, 136), getRandom(120, 136), getRandom(120, 136), 255}
+#define STEAM_COLOR {getRandom(120, 136), getRandom(120, 136), getRandom(120, 136), 50}
 
 class Chunk;
 

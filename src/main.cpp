@@ -228,15 +228,14 @@ int main(int argc, char **argv) {
 
   createGLContexts();
 
-  // Initialize the ClothSimulator object
+  // Initialize the WorldSim object
+  app = new WorldSim(project_root, screen);
+  app->init();
 
   // Call this after all the widgets have been defined
 
   screen->setVisible(true);
   screen->performLayout();
-
-  app = new WorldSim(project_root, screen);
-  app->init();
 
   // Attach callbacks to the GLFW window
 
@@ -251,14 +250,14 @@ int main(int argc, char **argv) {
     app->drawContents();
     app->simulate();
     // Draw nanogui
-    //screen->drawContents();
-    //screen->drawWidgets();
+    screen->drawContents();
+    screen->drawWidgets();
 
     glfwSwapBuffers(window);
 
-    //if (!app->isAlive()) {
-    //  glfwSetWindowShouldClose(window, 1);
-    //}
+    if (!app->isAlive()) {
+      glfwSetWindowShouldClose(window, 1);
+    }
   }
 
   return 0;
