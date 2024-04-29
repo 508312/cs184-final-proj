@@ -114,7 +114,7 @@ private:
 
 	bool is_paused = true;
 	CellType curr_type = SAND;
-	color curr_color = SAND_COLOR;
+	color(*get_curr_color)() = GET_COLOR_FUNC(SAND_COLOR);
 	int brush_size = 1;
 
 	// Screen attributes

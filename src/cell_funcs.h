@@ -13,6 +13,8 @@ inline uint8_t getRandom(uint8_t from, uint8_t to) {
 #define FIRE_COLOR {getRandom(235, 255), getRandom(0, 10), getRandom(0, 5), 255}
 #define STEAM_COLOR {getRandom(120, 136), getRandom(120, 136), getRandom(120, 136), 50}
 
+#define GET_COLOR_FUNC(CLR) []() {return color CLR; }
+
 class Chunk;
 
 extern void updateError(Chunk* chunk, vec3 pos);

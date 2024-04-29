@@ -274,7 +274,7 @@ void WorldSim::spawnKeyHeld() {
         for (int dz = temp.z - (brush_size - 1) /2; dz <= temp.z + (brush_size - 1) /2; dz++) {
             for (int dy = temp.y - (brush_size - 1) /2; dy <= temp.y + (brush_size - 1) /2; dy++) {
                 for (int dx = temp.x - (brush_size - 1) /2; dx <= temp.x + (brush_size - 1) /2; dx++) {
-                    world->spawnCell(vec3(dx,dy,dz), cell{ curr_color, curr_type });
+                    world->spawnCell(vec3(dx,dy,dz), cell{ get_curr_color(), curr_type});
                     if (std::find(updated_chunk.begin(), updated_chunk.end(), world->getChunkAtBlock(vec3(dx, dy, dz))) == updated_chunk.end()) {
                         updated_chunk.push_back(world->getChunkAtBlock(vec3(dx, dy, dz)));
                     }
@@ -283,7 +283,7 @@ void WorldSim::spawnKeyHeld() {
         }
     }
     else {
-        world->spawnCell(temp, cell{ curr_color, curr_type });
+        world->spawnCell(temp, cell{ get_curr_color(), curr_type });
         updated_chunk.push_back(world->getChunkAtBlock(getLookBlockPos()));
     }
     pushChunks(updated_chunk);
@@ -434,28 +434,28 @@ void WorldSim::initGUI(Screen* screen) {
         b->setFlags(Button::RadioButton);
         b->setCallback([this]() {
             curr_type = SAND;
-            curr_color = SAND_COLOR;
+            get_curr_color = GET_COLOR_FUNC(SAND_COLOR);
             });
 
         b = new Button(window, "water");
         b->setFlags(Button::RadioButton);
         b->setCallback([this]() {
             curr_type = WATER;
-            curr_color = WATER_COLOR;
+            get_curr_color = GET_COLOR_FUNC(WATER_COLOR);
             });
 
         b = new Button(window, "fire");
         b->setFlags(Button::RadioButton);
         b->setCallback([this]() {
             curr_type = FIRE;
-            curr_color = FIRE_COLOR;
+            get_curr_color = GET_COLOR_FUNC(FIRE_COLOR);
             });
 
         b = new Button(window, "steam");
         b->setFlags(Button::RadioButton);
         b->setCallback([this]() {
             curr_type = STEAM;
-            curr_color = STEAM_COLOR;
+            get_curr_color = GET_COLOR_FUNC(STEAM_COLOR);
             });
     }
 
