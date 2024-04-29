@@ -75,7 +75,6 @@ void WorldSim::init() {
 
     color black = color{ 0, 0, 0, 255 };
     color sand = color{ 255, 255, 0, 255 };
-    color water = color{ 0, 0, 255, 50 };
     // floor 
     for (int x = 0; x < 100; x++) {
         for (int z = 0; z < 100; z++) {
@@ -87,8 +86,8 @@ void WorldSim::init() {
     for (int x = 20; x < 25; x++) {
         for (int y = 20; y < 25; y++) {
             for (int z = 20; z < 25; z++) {
-                world->spawnCell(vec3(x, y, z), cell{ water, WATER });
-                world->spawnCell(vec3(x, -1, z), cell{ SAND_COLOR, WALL });
+                world->spawnCell(vec3(x, y, z), cell{ WATER_COLOR, WATER });
+                //world->spawnCell(vec3(x, -1, z), cell{ SAND_COLOR, WALL });
             }
         }
     }
@@ -105,22 +104,14 @@ void WorldSim::init() {
         world->spawnCell(vec3(2, y, 6), cell{ SAND_COLOR, SAND });
     }
 
-    /*
-    for (int y = 7; y < CHUNK_SIZE; y++) {
-        world->spawnCell(vec3(6, y, 6), cell{ water, WATER });
-        world->spawnCell(vec3(7, y, 7), cell{ water, WATER });
-        world->spawnCell(vec3(8, y, 8), cell{ water, WATER });
-    }
-    */
-
     for (int y = 7; y < CHUNK_SIZE; y++) {
         world->spawnCell(vec3(6, y, 6), cell{ FIRE_COLOR, FIRE });
-        world->spawnCell(vec3(7, y, 7), cell{ water, WATER });
+        world->spawnCell(vec3(7, y, 7), cell{ WATER_COLOR, WATER });
         world->spawnCell(vec3(8, y, 8), cell{ FIRE_COLOR, FIRE });
     }
 
     world->spawnCell(vec3(2, 5, 3), cell{ FIRE_COLOR, FIRE });
-    world->spawnCell(vec3(3, 5, 3), cell{ water, WATER });
+    world->spawnCell(vec3(3, 5, 3), cell{ WATER_COLOR, WATER });
 
     std::vector<Chunk*> chunks = world->getChunks();
     pushChunks(chunks);
@@ -130,7 +121,6 @@ void WorldSim::init() {
 
 void WorldSim::initShader() {
     shader.initFromFiles("default", project_root + "\\shaders\\default.vert", project_root + "\\shaders\\default.frag");
-    //shaderwater.initFromFiles("default", project_root + "\\shaders\\water.vert", project_root + "\\shaders\\water.frag");
 }
 
 
@@ -324,17 +314,17 @@ bool WorldSim::keyCallbackEvent(int key, int scancode, int action,
         case GLFW_KEY_RIGHT:
             d_held = true;
         case GLFW_KEY_LEFT_SHIFT:
-            camera.move_by(0, -250, canonical_view_distance);
+            shift_held = true;
             break;
         case ' ':
-            camera.move_by(0, 250, canonical_view_distance);
+            space_held = true;
             break;
 
         case 'f':
         case 'F':
             std::cout << spawn_distance;
 
-            world->spawnCell(getLookBlockPos(), cell{ SAND_COLOR, SAND });
+            world->spawnCell(getLookBlockPos(), cell{ curr_color, curr_type });
             updated_chunk.push_back(world->getChunkAtBlock(getLookBlockPos()));
             pushChunks(updated_chunk);
             break;
@@ -378,6 +368,10 @@ bool WorldSim::keyCallbackEvent(int key, int scancode, int action,
                 break;
             case GLFW_KEY_RIGHT:
                 d_held = false;
+            case GLFW_KEY_LEFT_SHIFT:
+                shift_held = false;
+            case ' ':
+                space_held = false;
         }
     }
 
@@ -412,12 +406,61 @@ void WorldSim::initGUI(Screen* screen) {
     window->setPosition(Vector2i(default_window_size(0) - 245, 15));
     window->setLayout(new GroupLayout(15, 6, 14, 5));
 
-    // Mass-spring parameters
+    new Label(window, "Material Types", "sans-bold");
 
-    new Label(window, "Parameters", "sans-bold");
+    {
+        Button* b = new Button(window, "sand");
+        b->setFlags(Button::RadioButton);
+        b->setCallback([this]() {
+            curr_type = SAND;
+            curr_color = SAND_COLOR;
+            });
+
+        b = new Button(window, "water");
+        b->setFlags(Button::RadioButton);
+        b->setCallback([this]() {
+            curr_type = WATER;
+            curr_color = WATER_COLOR;
+            });
+
+        b = new Button(window, "fire");
+        b->setFlags(Button::RadioButton);
+        b->setCallback([this]() {
+            curr_type = FIRE;
+            curr_color = FIRE_COLOR;
+            });
+
+        b = new Button(window, "steam");
+        b->setFlags(Button::RadioButton);
+        b->setCallback([this]() {
+            curr_type = STEAM;
+            curr_color = STEAM_COLOR;
+            });
+    }
+
+    new Label(window, "Brush Size", "sans-bold");
 
     {
         Widget* panel = new Widget(window);
+        panel->setLayout(
+            new BoxLayout(Orientation::Horizontal, Alignment::Middle, 0, 5));
+
+        Slider* slider = new Slider(panel);
+        slider->setValue((float) brush_size / 10);
+        slider->setFixedWidth(125);
+
+        TextBox* size = new TextBox(panel);
+        size->setFixedWidth(50);
+        size->setValue(std::to_string(brush_size));
+
+        slider->setCallback([size](float value) {
+            int intValue = static_cast<int>(value * 9.0f + 1);
+            size->setValue(std::to_string(intValue));
+            });
+
+        slider->setFinalCallback([&](float value) {
+            brush_size = static_cast<int>(value * 9.0f + 1);
+            });
     }
 }
 
@@ -656,6 +699,12 @@ void WorldSim::simulate() {
     }
     if (d_held) {
         camera.move_by(move_constant, 0, canonical_view_distance);
+    }
+    if (shift_held) {
+        camera.move_by(0, -250, canonical_view_distance);
+    }
+    if (space_held) {
+        camera.move_by(0, 250, canonical_view_distance);
     }
     if (!is_paused) {
         /*

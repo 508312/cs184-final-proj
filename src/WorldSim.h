@@ -112,6 +112,9 @@ private:
 	// Simulation flags
 
 	bool is_paused = true;
+	CellType curr_type = SAND;
+	color curr_color = SAND_COLOR;
+	int brush_size = 1;
 
 	// Screen attributes
 
@@ -127,6 +130,8 @@ private:
 	bool a_held = false;
 	bool s_held = false;
 	bool d_held = false;
+	bool shift_held = false;
+	bool space_held = false;
 
 	Vector2i default_window_size = Vector2i(800, 800);
 };
