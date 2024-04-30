@@ -52,6 +52,10 @@ void Camera::place(const Vector3D &targetPos, const double phi,
   compute_position();
 }
 
+Matrix3x3 Camera::getC2W() {
+    return c2w;
+}
+
 void Camera::copy_placement(const Camera &other) {
   pos = other.pos;
   targetPos = other.targetPos;

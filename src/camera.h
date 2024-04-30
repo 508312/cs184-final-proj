@@ -64,6 +64,7 @@ public:
 
   Vector3D position() const { return pos; }
   Vector3D view_point() const { return targetPos; }
+  Matrix3x3 getC2W();
   Vector3D up_dir() const { return c2w[1]; }
   Vector3D for_dir() const { return c2w[2]; }
   double v_fov() const { return vFov; }

@@ -70,6 +70,8 @@ private:
 
 	void initShader();
 
+	void mousePositionToWorld();
+
 	// File management
 	std::string project_root;
 

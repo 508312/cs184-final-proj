@@ -2,7 +2,9 @@
 #include <glad/glad.h>
 
 #include <CGL/vector3D.h>
+#include "CGL/vector3D.h"
 #include <iostream>
+#include "CGL/matrix3x3.h"
 #include <nanogui/nanogui.h>
 #include <utility>
 
@@ -17,6 +19,13 @@
 // Needed to generate stb_image binaries. Should only define in exactly one source file importing stb_image.h.
 #define STB_IMAGE_IMPLEMENTATION
 #include "misc/stb_image.h"
+using std::cout;
+using std::endl;
+using std::max;
+using std::min;
+using std::ifstream;
+using std::ofstream;
+using namespace CGL;
 
 WorldSim::WorldSim(std::string project_root, Screen* screen) {
 	this->screen = screen;
@@ -125,6 +134,17 @@ void WorldSim::initShader() {
     shader.initFromFiles("default", project_root + "\\shaders\\default.vert", project_root + "\\shaders\\default.frag");
 }
 
+void WorldSim::mousePositionToWorld() {
+    auto transformation_matrix = camera.getC2W();
+    double mousex, mousey = mouse_x, mouse_y;
+    const Vector3D& world_mouse = mousex * transformation_matrix[0] + mousey * transformation_matrix[1];
+    vec3 world_mouse_Vec3 = vec3(world_mouse.x, world_mouse.y, world_mouse.z);
+    auto chunk = world->getChunkIndex(world_mouse_Vec3);
+    if(camera)
+
+
+
+}
 
 Matrix4f WorldSim::getProjectionMatrix() {
 	Matrix4f perspective;
@@ -183,6 +203,7 @@ bool WorldSim::cursorPosCallbackEvent(double x, double y) {
         else {
             mouseLeftDragged(x, y);
         }
+
     }
     else if (!left_down && !middle_down && right_down) {
         mouseRightDragged(x, y);
@@ -196,7 +217,6 @@ bool WorldSim::cursorPosCallbackEvent(double x, double y) {
 
     return true;
 }
-
 bool WorldSim::mouseButtonCallbackEvent(int button, int action,
     int modifiers) {
     switch (action) {
