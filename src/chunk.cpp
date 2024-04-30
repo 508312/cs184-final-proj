@@ -1,10 +1,12 @@
 #include "chunk.h"
 #include "cell_types.h"
 #include "cell_funcs.h"
+#include <fstream>
 #include <iostream>
+#include <sstream>
 #include "cell.h"
 #include <cassert>
-
+#include <string>
 #include "world.h"
 
 color black = color{ 0, 0, 0, 0 };
@@ -23,6 +25,7 @@ Chunk::Chunk(World* wp, vec3 chunk_index) {
     }
     bbox_from = vec3(0, 0, 0);
     bbox_to = vec3(CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE);
+
     dirty_cells.reset();
 }
 
@@ -94,6 +97,23 @@ void Chunk::resetBbox() {
 }
 
 void Chunk::expandBbox(vec3& pos) {
+    /*
+    if (pos.x == 0) {
+        world
+    } else if (pos.x == CHUNK_SIZE) {
+
+    }
+    if (pos.y == 0) {
+
+    } else if (pos.y == CHUNK_SIZE) {
+
+    }
+    if (pos.z == 0) {
+
+    } else if (pos.z == CHUNK_SIZE) {
+
+    } */
+
     bbox_to.x = std::max(bbox_to.x, std::min(pos.x + 2, CHUNK_SIZE));
     bbox_to.y = std::max(bbox_to.y, std::min(pos.y + 2, CHUNK_SIZE));
     bbox_to.z = std::max(bbox_to.z, std::min(pos.z + 2, CHUNK_SIZE));
@@ -135,6 +155,20 @@ void Chunk::simulate(int simulation_steps) {
     }
 }
 
+void Chunk::dumpChunk(std::ofstream& file) {
+    //std::cout << " dumping " << chunk_pos.x << " " << chunk_pos.y << " " << chunk_pos.z << std::endl;
+    file << chunk_pos.x << " " << chunk_pos.y << " " << chunk_pos.z << std::endl;
+    for (int i = 0; i < CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE; i++) {
+        file << cells[i] << " ";
+    }
+}
+
+void Chunk::loadChunk(std::ifstream& file) {
+    //file >> chunk_pos.x >> chunk_pos.y >> chunk_pos.z;
+    for (int i = 0; i < CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE; i++) {
+        file >> cells[i];
+    }
+}
 
 void Chunk::resetDirty() {
     dirty_cells.reset();

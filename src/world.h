@@ -49,6 +49,10 @@ class World {
 
 		// block pos
 		Chunk* getChunkAtBlock(vec3 pos) { return getChunk(getChunkIndex(pos)); }
+
+		void dumpWorld(std::string filename);
+		void loadWorld(std::string filename);
+
 	private:
 		Chunk* getChunk(int idx) { return chunks[idx]; }
 
