@@ -65,6 +65,9 @@ std::vector<Chunk*> World::update() {
 	for (auto entry = chunks.begin(); entry != chunks.end(); entry++) {
 		Chunk* chunk = entry->second;
 		if (chunk->needsUpdate()) {
+			if (chunk->getChunkPos().y == -10) {
+				chunk->reset();
+			}
 			chunk->update();
 			updated_chunks.push_back(chunk);
 		}

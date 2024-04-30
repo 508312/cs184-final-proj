@@ -244,7 +244,7 @@ void updateGrass(Chunk* chunk, vec3 curr_pos) {
 		chunk->setCell(curr_pos + vec3(0, grow_length - 1, 0), cell{ TOPGRASS_COLOR, TOPGRASS });
 		// spread to nearby plantable blocks
 		for (int i = 0; i < sizeof(dirs) / sizeof(vec3); i++) {
-			if (isAbovePercentage(0.95) 
+			if (isAbovePercentage(0.94) 
 				&& type2prop[chunk->getCell(curr_pos + dirs[i]).type]&PROPERTY_PLANTABLE 
 				&& chunk->getCell(curr_pos + dirs[i] + 1).type == AIR) {
 				chunk->setCell(curr_pos + dirs[i] + 1, cell{ GRASS_COLOR, GRASS });
