@@ -428,7 +428,14 @@ void WorldSim::initGUI(Screen* screen) {
     window = new Window(screen, "Simulation");
     window->setPosition(Vector2i(default_window_size(0) - 245, 15));
     window->setLayout(new GroupLayout(15, 6, 14, 5));
-
+    new Label(window, "Reset World", "sans-bold");
+    {
+        Button* b = new Button(window, "reset-world");
+        b->setFlags(Button::NormalButton);
+        b->setCallback([this]() {
+            init();
+            });
+    }
     new Label(window, "Material Types", "sans-bold");
 
     {
