@@ -149,6 +149,8 @@ void updateFire(Chunk* chunk, vec3 curr_pos) {
 		}
 		if (chunk->getCell(curr_pos + vec3(0, -1, 0)).type == AIR) {
 			chunk->swapCells(curr_pos, curr_pos + vec3(0, -1, 0));
+		} else {
+			chunk->setCell(curr_pos, chunk->getCell(curr_pos));
 		}
 	}
 }
