@@ -137,6 +137,8 @@ private:
 	bool shift_held = false;
 	bool space_held = false;
 
+	bool draw_cursor = true;
+
 	Vector2i default_window_size = Vector2i(800, 800);
 };
 

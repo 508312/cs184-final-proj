@@ -359,6 +359,10 @@ bool WorldSim::keyCallbackEvent(int key, int scancode, int action,
                 is_paused = true;
             }
             break;
+        case 'c':
+        case 'C':
+            draw_cursor = !draw_cursor;
+            break;
         }
     }
 
@@ -808,46 +812,48 @@ void WorldSim::drawContents() {
     }
     glDepthMask(true);
 
-    MatrixXf lookpos(4, 0);
-    MatrixXf lookcol(4, 0);
-    color red = { 255, 0, 0 , 255 };
-    vec3 temp = getLookBlockPos();
-    if (brush_size > 1) {
-        int half_size = (brush_size - 1) / 2;
-        int startZ = temp.z - half_size;
-        int endZ = temp.z + half_size;
-        int startY = temp.y - half_size;
-        int endY = temp.y + half_size;
-        int startX = temp.x - half_size;
-        int endX = temp.x + half_size;
-        //top and bottom cubes first
-        for (int x = startX; x <= endX; x++) {
-            for (int y = startY; y <= endY; y++) {
-                pushCube(lookpos, lookcol, vec3(x, y, startZ), red);
-                pushCube(lookpos, lookcol, vec3(x, y, endZ), red);
-            }
-        }
-        //left and right cubes
-        for (int z = startZ; z <= endZ; z++) {
-            for (int y = startY; y <= endY; y++) {
-                pushCube(lookpos, lookcol, vec3(startX, y, z), red);
-                pushCube(lookpos, lookcol, vec3(endX, y, z), red);
-            }
-        }
-        //forward backward cubes
-        for (int z = startZ; z <= endZ; z++) {
+    if (draw_cursor) {
+        MatrixXf lookpos(4, 0);
+        MatrixXf lookcol(4, 0);
+        color red = { 255, 0, 0 , 255 };
+        vec3 temp = getLookBlockPos();
+        if (brush_size > 1) {
+            int half_size = (brush_size - 1) / 2;
+            int startZ = temp.z - half_size;
+            int endZ = temp.z + half_size;
+            int startY = temp.y - half_size;
+            int endY = temp.y + half_size;
+            int startX = temp.x - half_size;
+            int endX = temp.x + half_size;
+            //top and bottom cubes first
             for (int x = startX; x <= endX; x++) {
-                pushCube(lookpos, lookcol, vec3(x, startY, z), red);
-                pushCube(lookpos, lookcol, vec3(x, endY, z), red);
+                for (int y = startY; y <= endY; y++) {
+                    pushCube(lookpos, lookcol, vec3(x, y, startZ), red);
+                    pushCube(lookpos, lookcol, vec3(x, y, endZ), red);
+                }
+            }
+            //left and right cubes
+            for (int z = startZ; z <= endZ; z++) {
+                for (int y = startY; y <= endY; y++) {
+                    pushCube(lookpos, lookcol, vec3(startX, y, z), red);
+                    pushCube(lookpos, lookcol, vec3(endX, y, z), red);
+                }
+            }
+            //forward backward cubes
+            for (int z = startZ; z <= endZ; z++) {
+                for (int x = startX; x <= endX; x++) {
+                    pushCube(lookpos, lookcol, vec3(x, startY, z), red);
+                    pushCube(lookpos, lookcol, vec3(x, endY, z), red);
+                }
             }
         }
+        else {
+            pushCube(lookpos, lookcol, temp, red);
+        }
+        shader.uploadAttrib("in_position", lookpos, false);
+        shader.uploadAttrib("in_colors", lookcol, false);
+        shader.drawArray(GL_LINES, 0, lookpos.cols());
     }
-    else {
-        pushCube(lookpos, lookcol, temp, red);
-    }
-    shader.uploadAttrib("in_position", lookpos, false);
-    shader.uploadAttrib("in_colors", lookcol, false);
-    shader.drawArray(GL_LINES, 0, lookpos.cols());
 
     bool draw_bbox_outline = false;
     if (draw_bbox_outline) {
