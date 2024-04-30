@@ -239,7 +239,8 @@ void WorldSim::mouseMoved(double x, double y) {
     float dx = x - mouse_x;
     float dy = y - mouse_y;
     float sensitivity = 0.02f;
-    camera.rotate_by(-dy * sensitivity, -dx * sensitivity); 
+    if (rotatable)
+        camera.rotate_by(-dy * sensitivity, -dx * sensitivity); 
 
 }
 

@@ -45,6 +45,8 @@ public:
 	void pushFace(MatrixXf& positions, MatrixXf& colors, vec3 pos, CUBE_FACE face, color& color);
 	void pushChunkCube(MatrixXf& positions, MatrixXf& colors, Chunk* chunk, vec3 pos);
 
+	bool rotatable = false;
+
 private:
 	void pushChunk(Chunk* chunk, mesh& mesh);
 	void pushChunkBbox(Chunk* chunk, MatrixXf& positions, MatrixXf& colors);

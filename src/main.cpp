@@ -30,6 +30,9 @@ WorldSim* app = nullptr;
 GLFWwindow *window = nullptr;
 Screen *screen = nullptr;
 
+
+bool cursor_shown = true;
+
 void error_callback(int error, const char* description) {
   puts(description);
 }
@@ -103,6 +106,16 @@ void setGLFWCallbacks() {
         window, [](GLFWwindow*, int key, int scancode, int action, int mods) {
             if (!screen->keyCallbackEvent(key, scancode, action, mods)) {
                 app->keyCallbackEvent(key, scancode, action, mods);
+
+                if (action == GLFW_PRESS && (key == 'k' || key == 'K')) {
+                    if (cursor_shown){
+                        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+                    } else {
+                        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+                    }
+                    cursor_shown = !cursor_shown;
+                    app->rotatable = !app->rotatable;
+                }
             }
         });
     glfwSetScrollCallback(
