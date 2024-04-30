@@ -222,44 +222,76 @@ void updateGrass(Chunk* chunk, vec3 curr_pos) {
 							 vec3(-1, 1, 1),
 							 vec3(-1, 1, 0),
 	};
-	
+
+	if (type2prop[chunk->getCell(curr_pos + vec3(0, -1, 0)).type] & PROPERTY_PLANTABLE &&
+		(chunk->getCell(curr_pos + vec3(0, 1, 0)).type == GRASS ||
+		chunk->getCell(curr_pos + vec3(0, 1, 0)).type == TOPGRASS)) {
+
+		bool surrounded_by_grass = true;
+		for (int i = 0; i < 23; i++) {
+			if (dirs[i].y != 0) {
+				continue;
+			}
+			if (chunk->getCell(curr_pos + dirs[i]).type != GRASS) {
+				surrounded_by_grass = false;
+				break;
+			}
+		}
+		if (surrounded_by_grass) {
+			return;
+		}
+
+		// spread to nearby plantable blocks
+		for (int i = 0; i < 23; i++) {
+			if (isAbovePercentage(0.99)
+				&& type2prop[chunk->getCell(curr_pos + dirs[i]).type] & PROPERTY_PLANTABLE
+				&& chunk->getCell(curr_pos + dirs[i] + vec3(0, 1, 0)).type == AIR) {
+				chunk->setCell(curr_pos + dirs[i] + vec3(0, 1, 0), cell{ GRASS_COLOR, GRASS });
+			}
+		}
+
+		chunk->setCell(curr_pos, chunk->getCell(curr_pos));
+	}
+
 	// fall
 	if (chunk->getCell(curr_pos + vec3(0, -1, 0)).type == AIR) {
 		chunk->swapCells(curr_pos, curr_pos + vec3(0, -1, 0));
 	}
 	// otherwise check if landed on plantable material
-	else if (type2prop[chunk->getCell(curr_pos + vec3(0, -1, 0)).type]&PROPERTY_PLANTABLE) {
-		int grow_length = getRandom(1, 5);
-		for (int i = 1; i < grow_length; i++) {
+	else if (type2prop[chunk->getCell(curr_pos + vec3(0, -1, 0)).type] & PROPERTY_PLANTABLE) {
+		int grow_length = getRandom(1, 4);
+		for (int i = 1; i < grow_length + 1; i++) {
 			if (chunk->getCell(curr_pos + vec3(0, i, 0)).type == AIR) {
 				chunk->setCell(curr_pos + vec3(0, i, 0), cell{ GRASS_COLOR, GRASS });
 			}
 			else {
 				// something blocking growth, set growth_length to actual length
 				grow_length = i;
+				if (chunk->getCell(curr_pos + vec3(0, i, 0)).type == TOPGRASS ||
+					chunk->getCell(curr_pos + vec3(0, i, 0)).type == GRASS)
+					return;
+				else
+					break;
 			}
 		}
 		// set top grass block to special TOPGRASS type, indicates it's the end of a grass blade
-		// and prevents further growth at later ticks
-		if (isAbovePercentage(0.8)) {
+		// and prevents further growth at later ticks 
+		if (grow_length == 1) {
+			chunk->setCell(curr_pos + vec3(0, grow_length, 0), cell{ TOPGRASS_COLOR, TOPGRASS });
+		} else if (isAbovePercentage(0.6)) {
 			// flower
-			chunk->setCell(curr_pos + vec3(0, grow_length - 1, 0), cell{ TOPGRASSFLOWER_COLOR, TOPGRASS });
+			chunk->setCell(curr_pos + vec3(0, grow_length, 0), cell{ TOPGRASSFLOWER_COLOR, TOPGRASS });
+		} else {
+			chunk->setCell(curr_pos + vec3(0, grow_length, 0), cell{ TOPGRASS_COLOR, TOPGRASS });
 		}
-		else {
-			chunk->setCell(curr_pos + vec3(0, grow_length - 1, 0), cell{ TOPGRASS_COLOR, TOPGRASS });
-		}
-		// spread to nearby plantable blocks
-		for (int i = 0; i < sizeof(dirs) / sizeof(vec3); i++) {
-			if (isAbovePercentage(0.94) 
-				&& type2prop[chunk->getCell(curr_pos + dirs[i]).type]&PROPERTY_PLANTABLE 
-				&& chunk->getCell(curr_pos + dirs[i] + 1).type == AIR) {
-				chunk->setCell(curr_pos + dirs[i] + 1, cell{ GRASS_COLOR, GRASS });
-			}
-		}
-		// volatile update
 	}
 	// otherwise die
 	else {
+		if (chunk->getCell(curr_pos + vec3(0, -1, 0)).type == GRASS) {
+			//std::cout << "not dying due to grass" << std::endl;
+			return;
+		}
+		//std::cout << "dying due to not being on plantable" << std::endl;
 		chunk->setCell(curr_pos, cell{ AIR_COLOR, AIR });
 	}
 }

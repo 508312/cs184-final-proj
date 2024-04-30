@@ -926,7 +926,6 @@ void WorldSim::pushChunk(Chunk* chunk, mesh& mesh) {
 }
 
 inline void WorldSim::pushChunks(std::vector<Chunk*>& chunks) {
-    std::cout << "push started " << std::endl;
     for (Chunk* chunk : chunks) {
         mesh& mesh = chunk_meshes[world->getChunkIndex(chunk->getChunkPos() * CHUNK_SIZE)];
         mesh.positions = MatrixXf(4, 0);
@@ -938,7 +937,6 @@ inline void WorldSim::pushChunks(std::vector<Chunk*>& chunks) {
         mesh.colors_transparent = MatrixXf(4, 0);
         pushChunk(chunk, mesh);
     }
-    std::cout << "push finished " << std::endl;
 }
 
 void WorldSim::updateWorld() {
