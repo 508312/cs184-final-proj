@@ -176,19 +176,16 @@ void updateFire(Chunk* chunk, vec3 curr_pos) {
 }
 
 void updateSnow(Chunk* chunk, vec3 curr_pos) {
-	vec3 dirs[] = { vec3(-1, -1, -1),
+	vec3 dirs[] = {
 							 vec3(0, -1, -1),
-							 vec3(1, -1, -1),
 							 vec3(1, -1, 0),
-							 vec3(1, -1, 1),
 							 vec3(0, -1, 1),
-							 vec3(-1, -1, 1),
 							 vec3(-1, -1, 0) };
 	if (chunk->getCell(curr_pos + vec3(0, -1, 0)).type == AIR) {
 		chunk->swapCells(curr_pos, curr_pos + vec3(0, -1, 0));
 	}
-	else {
-		int size = 8;
+	else if (chunk->getCell(curr_pos + vec3(0, -1, 0)).type == SNOW) {
+		int size = 4;
 		while (size != 0) {
 			vec3 new_pos = curr_pos + get_random(size, dirs);
 			if (chunk->getCell(new_pos).type == AIR) {
