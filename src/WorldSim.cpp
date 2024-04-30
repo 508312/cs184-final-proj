@@ -484,6 +484,27 @@ void WorldSim::initGUI(Screen* screen) {
             brush_size = static_cast<int>(value * 9.0f + 1);
             });
     }
+
+    new Label(window, "Filename", "sans-bold");
+
+    {
+        TextBox* filename = new TextBox(window);
+        filename->setFixedWidth(300);
+        filename->setValue("Enter file name here");
+        filename->setEditable(true);
+
+        Button* b = new Button(window, "Save");
+        b->setFlags(Button::NormalButton);
+        b->setCallback([this, filename]() {
+            world->dumpWorld(project_root + filename->value());
+            });
+
+        b = new Button(window, "Load");
+        b->setFlags(Button::NormalButton);
+        b->setCallback([this, filename]() {
+            world->loadWorld(project_root + filename->value());
+            });
+    }
 }
 
 void WorldSim::pushFace(MatrixXf& positions, MatrixXf& colors,
