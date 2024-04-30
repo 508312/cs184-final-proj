@@ -13,6 +13,7 @@ inline uint8_t getRandom(uint8_t from, uint8_t to) {
 #define SAND_COLOR {getRandom(230, 245), getRandom(195, 220), getRandom(150, 175), 255}
 #define WATER_COLOR {getRandom(0, 75), getRandom(100, 150), 255, 50}
 #define FIRE_COLOR {getRandom(200, 255), getRandom(0, 90), getRandom(0, 5), 255}
+#define SNOW_COLOR {getRandom(250, 255), getRandom(250, 255), getRandom(250, 255), 255}
 #define STEAM_COLOR {getRandom(120, 136), getRandom(120, 136), getRandom(120, 136), 50}
 #define SMOKE_COLOR {getRandom(60, 80), getRandom(60, 80), getRandom(60, 80), 255}
 
@@ -25,6 +26,7 @@ extern void updateAir(Chunk* chunk, vec3 pos);
 extern void updateSand(Chunk* chunk, vec3 pos);
 extern void updateWater(Chunk* chunk, vec3 pos);
 extern void updateFire(Chunk* cunk, vec3 pos);
+extern void updateSnow(Chunk* cunk, vec3 pos);
 extern void updateSteam(Chunk* cunk, vec3 pos);
 extern void updateSmoke(Chunk* cunk, vec3 pos);
 

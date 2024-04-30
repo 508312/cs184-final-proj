@@ -104,8 +104,7 @@ void WorldSim::init() {
     }
 
     for (int y = 7; y < CHUNK_SIZE; y++) {
-        world->spawnCell(vec3(6, y, 6), cell{ FIRE_COLOR, FIRE });
-        world->spawnCell(vec3(7, y, 7), cell{ WATER_COLOR, WATER });
+        world->spawnCell(vec3(7, y, 7), cell{ FIRE_COLOR, FIRE });
         world->spawnCell(vec3(8, y, 8), cell{ FIRE_COLOR, FIRE });
     }
 
@@ -239,8 +238,7 @@ void WorldSim::mouseMoved(double x, double y) {
     float dx = x - mouse_x;
     float dy = y - mouse_y;
     float sensitivity = 0.02f;
-    if (rotatable)
-        camera.rotate_by(-dy * sensitivity, -dx * sensitivity); 
+    camera.rotate_by(-dy * sensitivity, -dx * sensitivity); 
 
 }
 
@@ -453,6 +451,13 @@ void WorldSim::initGUI(Screen* screen) {
             get_curr_color = GET_COLOR_FUNC(FIRE_COLOR);
             });
 
+        b = new Button(window, "snow");
+        b->setFlags(Button::RadioButton);
+        b->setCallback([this]() {
+            curr_type = SNOW;
+            get_curr_color = GET_COLOR_FUNC(SNOW_COLOR);
+            });
+
         b = new Button(window, "steam");
         b->setFlags(Button::RadioButton);
         b->setCallback([this]() {
@@ -504,7 +509,6 @@ void WorldSim::initGUI(Screen* screen) {
         b->setFlags(Button::NormalButton);
         b->setCallback([this, filename]() {
             world->loadWorld(project_root + filename->value());
-            pushChunks(world->getChunks());
             });
     }
 }

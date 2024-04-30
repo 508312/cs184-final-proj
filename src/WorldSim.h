@@ -115,8 +115,8 @@ private:
 	// Simulation flags
 
 	bool is_paused = true;
-	CellType curr_type = SAND;
-	color(*get_curr_color)() = GET_COLOR_FUNC(SAND_COLOR);
+	CellType curr_type = SNOW;
+	color(*get_curr_color)() = GET_COLOR_FUNC(SNOW_COLOR);
 	int brush_size = 1;
 
 	// Screen attributes
