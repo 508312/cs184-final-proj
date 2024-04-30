@@ -135,9 +135,6 @@ void WorldSim::mousePositionToWorld() {
     const Vector3D& world_mouse = mousex * transformation_matrix[0] + mousey * transformation_matrix[1];
     vec3 world_mouse_Vec3 = vec3(world_mouse.x, world_mouse.y, world_mouse.z);
     auto chunk = world->getChunkIndex(world_mouse_Vec3);
-    if(camera)
-
-
 
 }
 
