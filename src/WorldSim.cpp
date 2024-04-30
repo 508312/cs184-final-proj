@@ -105,7 +105,7 @@ void WorldSim::init() {
     }
 
     for (int y = 7; y < CHUNK_SIZE; y++) {
-        world->spawnCell(vec3(7, y, 7), cell{ SNOW_COLOR, SNOW });
+        world->spawnCell(vec3(7, y, 7), cell{ WOOD_COLOR, WOOD });
         world->spawnCell(vec3(8, y, 8), cell{ SNOW_COLOR, SNOW });
     }
 
@@ -468,11 +468,39 @@ void WorldSim::initGUI(Screen* screen) {
             get_curr_color = GET_COLOR_FUNC(GRASS_COLOR);
             });
 
+        b = new Button(window, "wood");
+        b->setFlags(Button::RadioButton);
+        b->setCallback([this]() {
+            curr_type = WOOD;
+            get_curr_color = GET_COLOR_FUNC(WOOD_COLOR);
+            });
+
+        b = new Button(window, "stone");
+        b->setFlags(Button::RadioButton);
+        b->setCallback([this]() {
+            curr_type = WALL;
+            get_curr_color = GET_COLOR_FUNC(WALL_COLOR);
+            });
+
         b = new Button(window, "steam");
         b->setFlags(Button::RadioButton);
         b->setCallback([this]() {
             curr_type = STEAM;
             get_curr_color = GET_COLOR_FUNC(STEAM_COLOR);
+            });
+
+        b = new Button(window, "smoke");
+        b->setFlags(Button::RadioButton);
+        b->setCallback([this]() {
+            curr_type = SMOKE;
+            get_curr_color = GET_COLOR_FUNC(SMOKE_COLOR);
+            });
+
+        b = new Button(window, "delete");
+        b->setFlags(Button::RadioButton);
+        b->setCallback([this]() {
+            curr_type = AIR;
+            get_curr_color = GET_COLOR_FUNC(AIR_COLOR);
             });
     }
 
