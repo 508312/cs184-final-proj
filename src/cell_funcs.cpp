@@ -238,20 +238,18 @@ void updateGrass(Chunk* chunk, vec3 curr_pos) {
 				break;
 			}
 		}
-		if (surrounded_by_grass) {
-			return;
-		}
-
-		// spread to nearby plantable blocks
-		for (int i = 0; i < 23; i++) {
-			if (isAbovePercentage(0.99)
-				&& type2prop[chunk->getCell(curr_pos + dirs[i]).type] & PROPERTY_PLANTABLE
-				&& chunk->getCell(curr_pos + dirs[i] + vec3(0, 1, 0)).type == AIR) {
-				chunk->setCell(curr_pos + dirs[i] + vec3(0, 1, 0), cell{ GRASS_COLOR, GRASS });
+		if (!surrounded_by_grass) {
+			// spread to nearby plantable blocks
+			for (int i = 0; i < 23; i++) {
+				if (isAbovePercentage(0.99)
+					&& type2prop[chunk->getCell(curr_pos + dirs[i]).type] & PROPERTY_PLANTABLE
+					&& chunk->getCell(curr_pos + dirs[i] + vec3(0, 1, 0)).type == AIR) {
+					chunk->setCell(curr_pos + dirs[i] + vec3(0, 1, 0), cell{ GRASS_COLOR, GRASS });
+				}
 			}
-		}
 
-		chunk->setCell(curr_pos, chunk->getCell(curr_pos));
+			chunk->setCell(curr_pos, chunk->getCell(curr_pos));
+		}
 	}
 
 	// fall
@@ -354,6 +352,12 @@ void updateSmoke(Chunk* chunk, vec3 curr_pos) {
 				return;
 			}
 		}
+	}
+}
+
+void updateTopGrass(Chunk* chunk, vec3 curr_pos) {
+	if (chunk->getCell(curr_pos + vec3(0, -1, 0)).type != GRASS) {
+		chunk->setCell(curr_pos, cell{ AIR_COLOR, AIR });
 	}
 }
 

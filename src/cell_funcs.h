@@ -34,6 +34,7 @@ extern void updateSnow(Chunk* cunk, vec3 pos);
 extern void updateGrass(Chunk* cunk, vec3 pos);
 extern void updateSteam(Chunk* cunk, vec3 pos);
 extern void updateSmoke(Chunk* cunk, vec3 pos);
+extern void updateTopGrass(Chunk* chunk, vec3 curr_pos);
 extern void doNothing(Chunk* cunk, vec3 pos);
 
 #endif
