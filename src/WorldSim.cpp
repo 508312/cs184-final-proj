@@ -503,6 +503,7 @@ void WorldSim::initGUI(Screen* screen) {
         b->setFlags(Button::NormalButton);
         b->setCallback([this, filename]() {
             world->loadWorld(project_root + filename->value());
+            pushChunks(world->getChunks());
             });
     }
 }
