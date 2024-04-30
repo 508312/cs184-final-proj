@@ -105,15 +105,9 @@ void WorldSim::init() {
     }
 
     for (int y = 7; y < CHUNK_SIZE; y++) {
-        world->spawnCell(vec3(7, y, 7), cell{ FIRE_COLOR, FIRE });
-        world->spawnCell(vec3(8, y, 8), cell{ FIRE_COLOR, FIRE });
+        world->spawnCell(vec3(7, y, 7), cell{ SNOW_COLOR, SNOW });
+        world->spawnCell(vec3(8, y, 8), cell{ SNOW_COLOR, SNOW });
     }
-
-    world->spawnCell(vec3(2, 5, 3), cell{ FIRE_COLOR, FIRE });
-    world->spawnCell(vec3(3, 5, 3), cell{ WATER_COLOR, WATER });
-
-    //world->dumpWorld("dumptest");
-    //world->loadWorld("dumptest");
 
     std::vector<Chunk*> chunks = world->getChunks();
     pushChunks(chunks);
@@ -458,6 +452,13 @@ void WorldSim::initGUI(Screen* screen) {
         b->setCallback([this]() {
             curr_type = SNOW;
             get_curr_color = GET_COLOR_FUNC(SNOW_COLOR);
+            });
+
+        b = new Button(window, "grass");
+        b->setFlags(Button::RadioButton);
+        b->setCallback([this]() {
+            curr_type = GRASS;
+            get_curr_color = GET_COLOR_FUNC(GRASS_COLOR);
             });
 
         b = new Button(window, "steam");
