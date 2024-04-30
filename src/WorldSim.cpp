@@ -993,7 +993,7 @@ void WorldSim::drawContents() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     for (mesh* mesh : meshes) {
-        if (mesh->positions.cols() == 0) {
+        if (mesh->positions_transparent.cols() == 0) {
             continue;
         }
         shader.uploadAttrib("in_position", mesh->positions_transparent, false);
