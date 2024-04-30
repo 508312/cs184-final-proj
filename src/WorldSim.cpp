@@ -56,6 +56,7 @@ void WorldSim::init() {
 
     view_distance = canonical_view_distance * 2;
     min_view_distance = canonical_view_distance / 10.0;
+    pan_speed = canonical_view_distance * 4.0;
     max_view_distance = canonical_view_distance * 20.0;
     move_constant = 300.0;
 
@@ -255,7 +256,7 @@ void WorldSim::mouseLeftDragged(double x, double y) {
 }
 
 void WorldSim::mouseRightDragged(double x, double y) {
-    camera.move_by(mouse_x - x, y - mouse_y, canonical_view_distance);
+    camera.move_by(mouse_x - x, y - mouse_y, pan_speed);
 }
 
 inline vec3 WorldSim::getLookBlockPos() {
@@ -809,7 +810,19 @@ void WorldSim::drawContents() {
     MatrixXf lookpos(4, 0);
     MatrixXf lookcol(4, 0);
     color red = { 255, 0, 0 , 255 };
-    pushCube(lookpos, lookcol, getLookBlockPos(), red);
+    vec3 temp = getLookBlockPos();
+    if (brush_size > 1) {
+        for (int dz = temp.z - (brush_size - 1) / 2; dz <= temp.z + (brush_size - 1) / 2; dz++) {
+            for (int dy = temp.y - (brush_size - 1) / 2; dy <= temp.y + (brush_size - 1) / 2; dy++) {
+                for (int dx = temp.x - (brush_size - 1) / 2; dx <= temp.x + (brush_size - 1) / 2; dx++) {
+                    pushCube(lookpos, lookcol, vec3(dx, dy,dz), red);
+                }
+            }
+        }
+    }
+    else {
+        pushCube(lookpos, lookcol, temp, red);
+    }
     shader.uploadAttrib("in_position", lookpos, false);
     shader.uploadAttrib("in_colors", lookcol, false);
     shader.drawArray(GL_LINES, 0, lookpos.cols());

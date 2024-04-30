@@ -93,6 +93,7 @@ private:
 
 	double scroll_rate;
 	double min_scroll_distance;
+	double pan_speed;
 	double max_scroll_distance;
 	double move_constant;
 
