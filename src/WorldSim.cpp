@@ -104,7 +104,7 @@ void WorldSim::init() {
     }
 
     for (int y = 7; y < CHUNK_SIZE; y++) {
-        world->spawnCell(vec3(7, y, 7), cell{ SNOW_COLOR, FIRE });
+        world->spawnCell(vec3(7, y, 7), cell{ FIRE_COLOR, FIRE });
         world->spawnCell(vec3(8, y, 8), cell{ FIRE_COLOR, FIRE });
     }
 
