@@ -16,8 +16,10 @@ using namespace nanogui;
 struct mesh {
 	MatrixXf positions;
 	MatrixXf positions_transparent;
+	MatrixXf orientation;
 	MatrixXf colors;
 	MatrixXf colors_transparent;
+	MatrixXf orientation_transparent;
 };
 
 class WorldSim {
@@ -43,6 +45,8 @@ public:
 
 	void pushCube(MatrixXf& positions, MatrixXf& colors, vec3 pos, color& color);
 	void pushFace(MatrixXf& positions, MatrixXf& colors, vec3 pos, CUBE_FACE face, color& color);
+	void pushFacePoint(MatrixXf& positions, MatrixXf& colors, MatrixXf& orientation, vec3 pos, CUBE_FACE face, color& color);
+	void pushChunkCubePoint(MatrixXf& positions, MatrixXf& colors, MatrixXf& orientation, Chunk* chunk, vec3 pos);
 	void pushChunkCube(MatrixXf& positions, MatrixXf& colors, Chunk* chunk, vec3 pos);
 
 	bool rotatable = false;
@@ -64,7 +68,7 @@ private:
 	std::unordered_map<int, mesh> chunk_meshes;
 
 	GLShader shader;
-	//GLShader shaderwater;
+	GLShader shaderCursor;
 
 	World* world;
 

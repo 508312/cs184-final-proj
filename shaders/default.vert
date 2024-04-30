@@ -12,8 +12,7 @@ uniform mat4 u_view_projection;
 in vec4 in_position;
 in vec4 in_normal;
 in vec4 in_colors;
-in vec4 in_tangent;
-in vec2 in_uv;
+in vec4 in_orientations;
 
 // In a vertex shader, the "out" variables are per-vertex properties
 // that are read/write. These properties allow us to communicate
@@ -21,7 +20,8 @@ in vec2 in_uv;
 // That is, in the linked fragment shader, these values become the 
 // "in" variables.
 out vec4 v_position;
-out vec4 v_colors;
+out vec4 v_color;
+out vec4 v_orientation;
 
 // Every shader features a "main" function.
 // This is typically where we write to the "out" variables that the
@@ -29,7 +29,8 @@ out vec4 v_colors;
 // which is the final screen-space location of this vertex which the
 // GPU's triangle rasterizer takes in.
 void main() {
-  v_colors = in_colors;
+  v_color = in_colors;
+  v_orientation = in_orientations;
   
-  gl_Position = u_view_projection * u_model * in_position;
+  gl_Position = in_position;
 }

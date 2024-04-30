@@ -28,7 +28,7 @@ WorldSim::WorldSim(std::string project_root, Screen* screen) {
 
 WorldSim::~WorldSim() {
     shader.free();
-    //shaderwater.free();
+    shaderCursor.free();
 }
 
 void WorldSim::init() {
@@ -76,8 +76,8 @@ void WorldSim::init() {
     world = new World();
 
     // floor 
-    for (int x = 0; x < 100; x++) {
-        for (int z = 0; z < 100; z++) {
+    for (int x = 0; x < 250; x++) {
+        for (int z = 0; z < 250; z++) {
             world->spawnCell(vec3(x, 0, z), cell{ SAND_COLOR, SAND });
             world->spawnCell(vec3(x, -1, z), cell{ WALL_COLOR, WALL });
         }
@@ -122,7 +122,8 @@ void WorldSim::init() {
 }
 
 void WorldSim::initShader() {
-    shader.initFromFiles("default", project_root + "\\shaders\\default.vert", project_root + "\\shaders\\default.frag");
+    shader.initFromFiles("default", project_root + "\\shaders\\default.vert", project_root + "\\shaders\\default.frag", project_root + "\\shaders\\default.geom");
+    shaderCursor.initFromFiles("cursor", project_root + "\\shaders\\cursor.vert", project_root + "\\shaders\\cursor.frag");
 }
 
 
@@ -520,6 +521,117 @@ void WorldSim::initGUI(Screen* screen) {
     }
 }
 
+void WorldSim::pushFacePoint(MatrixXf& positions, MatrixXf& colors, MatrixXf& orientation,
+    vec3 pos,
+    CUBE_FACE face,
+    color& color) {
+    positions.conservativeResize(Eigen::NoChange, positions.cols() + Eigen::Index(1));
+    colors.conservativeResize(Eigen::NoChange, colors.cols() + Eigen::Index(1));
+    orientation.conservativeResize(Eigen::NoChange, orientation.cols() + Eigen::Index(1));
+    int idx = positions.cols() - 1;
+    float dx = 0.0;
+    float dy = 0.0;
+    float dz = 0.0;
+    float dc = 0.0;
+
+    float coeff = 1.0;
+
+    int x = pos[0];
+    int y = pos[1];
+    int z = pos[2];
+
+    switch (face) {
+    case BOT:
+        // y is constant
+        // dx dz are variables
+        dx = 1;
+        dy = 0;
+        dc = 0;
+        dz = -1;
+
+        // set correct normal
+        //ny = 1;
+        coeff = 0.7;
+        break;
+    case TOP:
+        // y is constant
+        // dx dz change
+        y += 1;
+        dx = 1;
+        dy = 0;
+        dc = 0;
+        dz = -1;
+
+        // set correct normal
+        //ny = 1.0;
+        coeff = 1.0;
+        break;
+    case LEFT:
+        // x is constant
+        // dy dz change
+        dx = 0;
+        dy = 0;
+        dc = 1;
+        dz = -1;
+
+        // set correct normal
+        //nx = 1.0;
+        coeff = 0.9;
+        break;
+    case RIGHT:
+        // x is constant
+        // dy dz change
+        x += 1.0;
+        dx = 0;
+        dy = 0;
+        dc = 1;
+        dz = -1;
+
+        // set correct normal
+        //nx = 1.0;
+        coeff = 0.83;
+        break;
+    case FORWARD:
+        // z is constant
+        // dx dy change
+        dx = 1;
+        dy = 1;
+        dc = 0;
+        dz = 0;
+
+        // set correct normal
+        //nz = 1.0;
+        coeff = 0.87;
+        break;
+    case BACKWARD:
+        // z is constant
+        // dx dy change
+        z -= 1.0;
+        dx = 1;
+        dy = 1;
+        dc = 0;
+        dz = 0;
+
+        // set correct normal
+        //nz = 1.0;
+        coeff = 0.8;
+        break;
+    default:
+        std::cout << "SOMETHING WENT WRONG" << std::endl;
+    }
+
+    // bottom left corner
+    positions.col(idx) << x, y, z, 1.0;
+    orientation.col(idx) << dx, dy, dz, dc;
+
+
+    float r = color.r / 255.0 * coeff;
+    float g = color.g / 255.0 * coeff;
+    float b = color.b / 255.0 * coeff;
+    float a = color.a / 255.0;
+    colors.col(idx) << r, g, b, a;
+}
+
 void WorldSim::pushFace(MatrixXf& positions, MatrixXf& colors,
                                         vec3 pos ,
                                         CUBE_FACE face,
@@ -651,6 +763,34 @@ void WorldSim::pushFace(MatrixXf& positions, MatrixXf& colors,
     colors.col((idx + 1) * 3 + 2) << r, g, b, a;
 }
 
+inline void WorldSim::pushChunkCubePoint(MatrixXf& positions, MatrixXf& colors, MatrixXf& orientation, Chunk* chunk, vec3 posInChunk) {
+    if (chunk->getCell(posInChunk).color.a == 0) {
+        return;
+    }
+    vec3 pos = chunk->getChunkPos() * CHUNK_SIZE + posInChunk;  // global pos
+    cell& self = chunk->getCell(posInChunk);
+    cell& topNeighbor = chunk->getCell(posInChunk + vec3(0, 1, 0));
+    cell& botNeighbor = chunk->getCell(posInChunk + vec3(0, -1, 0));
+    cell& leftNeighbor = chunk->getCell(posInChunk + vec3(-1, 0, 0));
+    cell& rightNeighbor = chunk->getCell(posInChunk + vec3(1, 0, 0));
+    cell& forwardNeighbor = chunk->getCell(posInChunk + vec3(0, 0, 1));
+    cell& backwardNeighbor = chunk->getCell(posInChunk + vec3(0, 0, -1));
+
+    if (leftNeighbor.color.a != 255 && leftNeighbor.type != self.type)
+        pushFacePoint(positions, colors, orientation, pos, LEFT, self.color);
+    if (botNeighbor.color.a != 255 && botNeighbor.type != self.type)
+        pushFacePoint(positions, colors, orientation, pos, BOT, self.color);
+    if (forwardNeighbor.color.a != 255 && forwardNeighbor.type != self.type)
+        pushFacePoint(positions, colors, orientation, pos, FORWARD, self.color);
+    if (topNeighbor.color.a != 255 && topNeighbor.type != self.type)
+        pushFacePoint(positions, colors, orientation, pos, TOP, self.color);
+    if (rightNeighbor.color.a != 255 && rightNeighbor.type != self.type)
+        pushFacePoint(positions, colors, orientation, pos, RIGHT, self.color);
+    if (backwardNeighbor.color.a != 255 && backwardNeighbor.type != self.type)
+        pushFacePoint(positions, colors, orientation, pos, BACKWARD, self.color);
+}
+
+
 inline void WorldSim::pushChunkCube(MatrixXf& positions, MatrixXf& colors, Chunk* chunk, vec3 posInChunk) {
     if (chunk->getCell(posInChunk).color.a == 0) {
         return;
@@ -716,9 +856,9 @@ void WorldSim::pushChunk(Chunk* chunk, mesh& mesh) {
                 //    pushCube(positions, colors, chunk->getChunkPos() * CHUNK_SIZE + vec3(x, y, z), chunk->getCell(vec3(x, y, z)).color);
                 //}
                 if (chunk->getCell(vec3(x, y, z)).color.a == 255) {
-                    pushChunkCube(mesh.positions, mesh.colors, chunk, vec3(x, y, z));
+                    pushChunkCubePoint(mesh.positions, mesh.colors, mesh.orientation, chunk, vec3(x, y, z));
                 } else {
-                    pushChunkCube(mesh.positions_transparent, mesh.colors_transparent, chunk, vec3(x, y, z));
+                    pushChunkCubePoint(mesh.positions_transparent, mesh.colors_transparent, mesh.orientation_transparent, chunk, vec3(x, y, z));
                 }
                 
             }
@@ -727,15 +867,19 @@ void WorldSim::pushChunk(Chunk* chunk, mesh& mesh) {
 }
 
 inline void WorldSim::pushChunks(std::vector<Chunk*>& chunks) {
+    std::cout << "push started " << std::endl;
     for (Chunk* chunk : chunks) {
         mesh& mesh = chunk_meshes[world->getChunkIndex(chunk->getChunkPos() * CHUNK_SIZE)];
         mesh.positions = MatrixXf(4, 0);
+        mesh.orientation = MatrixXf(4, 0);
         mesh.colors = MatrixXf(4, 0);
 
         mesh.positions_transparent = MatrixXf(4, 0);
+        mesh.orientation_transparent = MatrixXf(4, 0);
         mesh.colors_transparent = MatrixXf(4, 0);
         pushChunk(chunk, mesh);
     }
+    std::cout << "push finished " << std::endl;
 }
 
 void WorldSim::updateWorld() {
@@ -797,22 +941,29 @@ void WorldSim::drawContents() {
     shader.setUniform("u_model", model);
     shader.setUniform("u_view_projection", viewProjection);
     glDisable(GL_BLEND);
+
     for (mesh* mesh : meshes) {
         shader.uploadAttrib("in_position", mesh->positions, false);
+        shader.uploadAttrib("in_orientations", mesh->orientation, false);
         shader.uploadAttrib("in_colors", mesh->colors, false);
-        shader.drawArray(GL_TRIANGLES, 0, mesh->positions.cols());
+        shader.drawArray(GL_POINTS, 0, mesh->positions.cols());
     }
+    
+    
     glDepthMask(false);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     for (mesh* mesh : meshes) {
         shader.uploadAttrib("in_position", mesh->positions_transparent, false);
+        shader.uploadAttrib("in_orientations", mesh->orientation_transparent, false);
         shader.uploadAttrib("in_colors", mesh->colors_transparent, false);
-        shader.drawArray(GL_TRIANGLES, 0, mesh->positions_transparent.cols());
+        shader.drawArray(GL_POINTS, 0, mesh->positions_transparent.cols());
     }
     glDepthMask(true);
-
-    if (draw_cursor) {
+     
+    
+    
+    if (true) {
         MatrixXf lookpos(4, 0);
         MatrixXf lookcol(4, 0);
         color red = { 255, 0, 0 , 255 };
@@ -850,9 +1001,12 @@ void WorldSim::drawContents() {
         else {
             pushCube(lookpos, lookcol, temp, red);
         }
-        shader.uploadAttrib("in_position", lookpos, false);
-        shader.uploadAttrib("in_colors", lookcol, false);
-        shader.drawArray(GL_LINES, 0, lookpos.cols());
+        shaderCursor.bind();
+        shaderCursor.setUniform("u_model", model);
+        shaderCursor.setUniform("u_view_projection", viewProjection);
+        shaderCursor.uploadAttrib("in_position", lookpos, false);
+        shaderCursor.uploadAttrib("in_colors", lookcol, false);
+        shaderCursor.drawArray(GL_LINES, 0, lookpos.cols());
     }
 
     bool draw_bbox_outline = false;
@@ -864,12 +1018,13 @@ void WorldSim::drawContents() {
         for (Chunk* chunk : chunks) {
             pushChunkBbox(chunk, positions, colors);
         }
-        shader.bind();
-        shader.setUniform("u_model", model);
-        shader.setUniform("u_view_projection", viewProjection);
-        shader.uploadAttrib("in_position", positions, false);
-        shader.uploadAttrib("in_colors", colors, false);
+        shaderCursor.bind();
+        shaderCursor.setUniform("u_model", model);
+        shaderCursor.setUniform("u_view_projection", viewProjection);
+        shaderCursor.uploadAttrib("in_position", positions, false);
+        shaderCursor.uploadAttrib("in_colors", colors, false);
 
-        shader.drawArray(GL_LINES, 0, positions.cols());
+        shaderCursor.drawArray(GL_LINES, 0, positions.cols());
     }
+    
 }
