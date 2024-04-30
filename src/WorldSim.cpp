@@ -109,9 +109,6 @@ void WorldSim::init() {
         world->spawnCell(vec3(8, y, 8), cell{ FIRE_COLOR, FIRE });
     }
 
-    world->spawnCell(vec3(2, 5, 3), cell{ FIRE_COLOR, FIRE });
-    world->spawnCell(vec3(3, 5, 3), cell{ WATER_COLOR, WATER });
-
     std::vector<Chunk*> chunks = world->getChunks();
     pushChunks(chunks);
 

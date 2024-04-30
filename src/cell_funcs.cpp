@@ -113,7 +113,7 @@ void updateFire(Chunk* chunk, vec3 curr_pos) {
 							 vec3(-1, 1, 0),
 	};
 	// dissipate with a chance
-	if (isAbovePercentage(0.9)) {
+	if (isAbovePercentage(0.95)) {
 		chunk->setCell(curr_pos, cell{ AIR_COLOR, AIR });
 		return;
 	}
