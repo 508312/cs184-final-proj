@@ -104,7 +104,7 @@ void WorldSim::init() {
     }
 
     for (int y = 7; y < CHUNK_SIZE; y++) {
-        world->spawnCell(vec3(7, y, 7), cell{ SNOW_COLOR, SNOW });
+        world->spawnCell(vec3(7, y, 7), cell{ SNOW_COLOR, FIRE });
         world->spawnCell(vec3(8, y, 8), cell{ FIRE_COLOR, FIRE });
     }
 
@@ -238,8 +238,7 @@ void WorldSim::mouseMoved(double x, double y) {
     float dx = x - mouse_x;
     float dy = y - mouse_y;
     float sensitivity = 0.02f;
-    if (rotatable)
-        camera.rotate_by(-dy * sensitivity, -dx * sensitivity); 
+    camera.rotate_by(-dy * sensitivity, -dx * sensitivity); 
 
 }
 
@@ -510,7 +509,6 @@ void WorldSim::initGUI(Screen* screen) {
         b->setFlags(Button::NormalButton);
         b->setCallback([this, filename]() {
             world->loadWorld(project_root + filename->value());
-            pushChunks(world->getChunks());
             });
     }
 }

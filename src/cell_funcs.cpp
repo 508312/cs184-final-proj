@@ -150,8 +150,11 @@ void updateFire(Chunk* chunk, vec3 curr_pos) {
 	}
 	else {
 		for (int i = 0; i < burnable.size(); i++) {
-			if (isAbovePercentage(0.7)) {
+			if (isAbovePercentage(0.5)) {
 				chunk->setCell(curr_pos + burnable[i], cell{ FIRE_COLOR, FIRE });
+			}
+			else {
+				chunk->setCell(curr_pos + burnable[i], cell{ SMOKE_COLOR, SMOKE });
 			}
 		}
 		if (chunk->getCell(curr_pos + vec3(0, -1, 0)).type == AIR) {
