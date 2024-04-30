@@ -979,6 +979,9 @@ void WorldSim::drawContents() {
     glDisable(GL_BLEND);
 
     for (mesh* mesh : meshes) {
+        if (mesh->positions.cols() == 0) {
+            continue;
+        }
         shader.uploadAttrib("in_position", mesh->positions, false);
         shader.uploadAttrib("in_orientations", mesh->orientation, false);
         shader.uploadAttrib("in_colors", mesh->colors, false);
@@ -990,6 +993,9 @@ void WorldSim::drawContents() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     for (mesh* mesh : meshes) {
+        if (mesh->positions.cols() == 0) {
+            continue;
+        }
         shader.uploadAttrib("in_position", mesh->positions_transparent, false);
         shader.uploadAttrib("in_orientations", mesh->orientation_transparent, false);
         shader.uploadAttrib("in_colors", mesh->colors_transparent, false);

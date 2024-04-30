@@ -29,6 +29,8 @@ class Chunk {
 
 		void expandBbox(vec3& pos);
 
+		void reset();
+
 		vec3 getBboxFrom() { return bbox_from; }
 		vec3 getBboxTo() { return bbox_to; }
 
