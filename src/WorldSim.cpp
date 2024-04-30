@@ -104,8 +104,7 @@ void WorldSim::init() {
     }
 
     for (int y = 7; y < CHUNK_SIZE; y++) {
-        world->spawnCell(vec3(6, y, 6), cell{ FIRE_COLOR, FIRE });
-        world->spawnCell(vec3(7, y, 7), cell{ WATER_COLOR, WATER });
+        world->spawnCell(vec3(7, y, 7), cell{ SNOW_COLOR, SNOW });
         world->spawnCell(vec3(8, y, 8), cell{ FIRE_COLOR, FIRE });
     }
 
@@ -450,6 +449,13 @@ void WorldSim::initGUI(Screen* screen) {
         b->setCallback([this]() {
             curr_type = FIRE;
             get_curr_color = GET_COLOR_FUNC(FIRE_COLOR);
+            });
+
+        b = new Button(window, "snow");
+        b->setFlags(Button::RadioButton);
+        b->setCallback([this]() {
+            curr_type = SNOW;
+            get_curr_color = GET_COLOR_FUNC(SNOW_COLOR);
             });
 
         b = new Button(window, "steam");

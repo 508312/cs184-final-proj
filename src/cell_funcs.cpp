@@ -50,6 +50,7 @@ void updateSand(Chunk* chunk, vec3 curr_pos) {
 		}
 	}
 }
+
 void updateWater(Chunk* chunk, vec3 curr_pos) {
 	vec3 dirs[] = { vec3(-1, -1, -1),
 							 vec3(0, -1, -1),
@@ -120,9 +121,15 @@ void updateFire(Chunk* chunk, vec3 curr_pos) {
 
 	std::vector<vec3> burnable;
 	for (int i = 0; i < sizeof(dirs) / sizeof(vec3); i++) {
-		if (chunk->getCell(curr_pos + dirs[i]).type == WATER) { 
-			// if any of the adjacent cells are water, burn out immediately
+		if (chunk->getCell(curr_pos + dirs[i]).type == WATER) {
+			// if any of the adjacent cells are water, burn out both immediately
 			chunk->setCell(curr_pos + dirs[i], cell{ STEAM_COLOR, STEAM });
+			chunk->setCell(curr_pos, cell{ STEAM_COLOR, STEAM });
+			return;
+		}
+		if (chunk->getCell(curr_pos + dirs[i]).type == SNOW) {
+			// if any of the adjacent cells are snow, burn out fire and melt snow immediately
+			chunk->setCell(curr_pos + dirs[i], cell{ WATER_COLOR, WATER });
 			chunk->setCell(curr_pos, cell{ STEAM_COLOR, STEAM });
 			return;
 		}
@@ -149,6 +156,30 @@ void updateFire(Chunk* chunk, vec3 curr_pos) {
 		}
 		if (chunk->getCell(curr_pos + vec3(0, -1, 0)).type == AIR) {
 			chunk->swapCells(curr_pos, curr_pos + vec3(0, -1, 0));
+		}
+	}
+}
+
+void updateSnow(Chunk* chunk, vec3 curr_pos) {
+	vec3 dirs[] = { vec3(-1, -1, -1),
+							 vec3(0, -1, -1),
+							 vec3(1, -1, -1),
+							 vec3(1, -1, 0),
+							 vec3(1, -1, 1),
+							 vec3(0, -1, 1),
+							 vec3(-1, -1, 1),
+							 vec3(-1, -1, 0) };
+	if (chunk->getCell(curr_pos + vec3(0, -1, 0)).type == AIR) {
+		chunk->swapCells(curr_pos, curr_pos + vec3(0, -1, 0));
+	}
+	else {
+		int size = 8;
+		while (size != 0) {
+			vec3 new_pos = curr_pos + get_random(size, dirs);
+			if (chunk->getCell(new_pos).type == AIR) {
+				chunk->swapCells(curr_pos, new_pos);
+				return;
+			}
 		}
 	}
 }
