@@ -59,6 +59,7 @@ void WorldSim::init() {
     CGL::Vector3D c_dir(0., 0., 0.);
 
     canonical_view_distance = 2.0f * 0.9;
+    max_falling_speed = 800.0f;
     scroll_rate = canonical_view_distance / 1.3;
     min_scroll_distance = canonical_view_distance*2;
     max_scroll_distance = canonical_view_distance*20;
@@ -375,7 +376,12 @@ bool WorldSim::keyCallbackEvent(int key, int scancode, int action,
         case 'C':
             draw_cursor = !draw_cursor;
             break;
+        case 'l':
+        case 'L':
+            camera_falling = !camera_falling;
+            break;
         }
+        
     }
 
     if (action == GLFW_RELEASE) {
@@ -966,6 +972,20 @@ void WorldSim::simulate() {
         */
         updateWorld();
     }
+    if (camera_falling) {
+        vec3 camera_position = vec3d2vec3(camera.position());
+        auto cur_chunk = world->getChunkAtBlock(camera_position);
+        if (cur_chunk->getCell(camera_position + vec3(0, -1, 0)).type != AIR) {
+            falling_speed = 0.0f;
+        }
+        camera.move_by(0, -min(falling_speed, max_falling_speed), canonical_view_distance);
+        falling_speed += falling_acceleration;
+        //check if intersects something
+    }
+}
+
+inline vec3 WorldSim::vec3d2vec3(Vector3D vec3D) {
+    return vec3(vec3D.x, vec3D.y, vec3D.z);
 }
 
 inline std::vector<mesh*> WorldSim::getChunkMeshes() {

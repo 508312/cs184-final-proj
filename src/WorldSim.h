@@ -6,11 +6,14 @@
 
 #include "camera.h"
 #include "cubeFaceEnum.h"
+#include <CGL/vector3D.h>
+#include "CGL/vector3D.h"
 #include "chunk.h"
 
 #include "world.h"
 
 using namespace nanogui;
+using namespace CGL;
 
 // calling this mesh but there is probably a better name
 struct mesh {
@@ -56,6 +59,7 @@ private:
 	void pushChunkBbox(Chunk* chunk, MatrixXf& positions, MatrixXf& colors);
 
 	std::vector<mesh*> getChunkMeshes();
+	vec3 vec3d2vec3(Vector3D vec3D);
 	void updateWorld();
 	void pushChunks(std::vector<Chunk*>& chunks);
 
@@ -141,8 +145,10 @@ private:
 	bool s_held = false;
 	bool d_held = false;
 	bool shift_held = false;
+	double falling_speed = 0.0f, falling_acceleration = 50.0f;
+	bool camera_falling = false;
 	bool space_held = false;
-
+	double max_falling_speed;
 	bool draw_cursor = true;
 
 	Vector2i default_window_size = Vector2i(800, 800);
