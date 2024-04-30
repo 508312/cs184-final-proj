@@ -157,11 +157,17 @@ void updateFire(Chunk* chunk, vec3 curr_pos) {
 				chunk->setCell(curr_pos + burnable[i], cell{ SMOKE_COLOR, SMOKE });
 			}
 		}
-		if (chunk->getCell(curr_pos + vec3(0, -1, 0)).type == AIR) {
-			chunk->swapCells(curr_pos, curr_pos + vec3(0, -1, 0));
-		} else {
-			chunk->setCell(curr_pos, chunk->getCell(curr_pos));
+
+		int size = 25;
+		while (size != 0) {
+			vec3 new_pos = curr_pos + get_random(size, dirs);
+			if (chunk->getCell(new_pos).type == AIR) {
+				chunk->swapCells(curr_pos, new_pos);
+				return;
+			}
 		}
+
+		chunk->setCell(curr_pos, chunk->getCell(curr_pos));
 	}
 }
 
