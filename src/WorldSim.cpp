@@ -238,7 +238,8 @@ void WorldSim::mouseMoved(double x, double y) {
     float dx = x - mouse_x;
     float dy = y - mouse_y;
     float sensitivity = 0.02f;
-    camera.rotate_by(-dy * sensitivity, -dx * sensitivity); 
+    if (rotatable)
+        camera.rotate_by(-dy * sensitivity, -dx * sensitivity); 
 
 }
 
@@ -509,6 +510,7 @@ void WorldSim::initGUI(Screen* screen) {
         b->setFlags(Button::NormalButton);
         b->setCallback([this, filename]() {
             world->loadWorld(project_root + filename->value());
+            pushChunks(world->getChunks());
             });
     }
 }
