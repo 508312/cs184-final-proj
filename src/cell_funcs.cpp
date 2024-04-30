@@ -232,7 +232,8 @@ void updateGrass(Chunk* chunk, vec3 curr_pos) {
 			if (dirs[i].y != 0) {
 				continue;
 			}
-			if (chunk->getCell(curr_pos + dirs[i]).type != GRASS) {
+			if (chunk->getCell(curr_pos + dirs[i]).type != GRASS &&
+				chunk->getCell(curr_pos + dirs[i]).type != TOPGRASS) {
 				surrounded_by_grass = false;
 				break;
 			}
