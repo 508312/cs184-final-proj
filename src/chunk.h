@@ -33,6 +33,8 @@ class Chunk {
 		vec3 getBboxTo() { return bbox_to; }
 
 		void resetDirty();
+		void dumpChunk(std::ofstream& file);
+		void loadChunk(std::ifstream& file);
 
 	private:
 		void resetBbox();

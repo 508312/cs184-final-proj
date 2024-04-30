@@ -1,7 +1,9 @@
 #include "world.h"
 #include "chunk.h"
 #include <iostream>
-
+#include <fstream>
+#include <iostream>
+#include <sstream>
 
 World::World() {
 	createChunkIfDoesntExist(vec3(0, 0, 0));
@@ -76,4 +78,29 @@ std::vector<Chunk*> World::update() {
 		chunk->resetDirty();
 	}
 	return updated_chunks;
+}
+
+void World::dumpWorld(std::string filename) {
+	std::ofstream file(filename);
+	std::vector<Chunk*> chunks = getChunks();
+	file << chunks.size() << "\n";
+	for (Chunk* ch: chunks) {
+		//std::cout << "from get " << ch->getChunkPos().x << " " << ch->getChunkPos().y << " " << ch->getChunkPos().z << std::endl;
+		ch->dumpChunk(file);
+		file << std::endl;
+	}
+}
+
+void World::loadWorld(std::string filename) {
+	std::ifstream file(filename);
+	vec3 curvec;
+	int len;
+	file >> len;
+	for (int i = 0; i < len; i++) {
+		file >> curvec.x >> curvec.y >> curvec.z;
+		std::cout << "world load " << curvec.x << " " << curvec.y << " " << curvec.z << std::endl;
+		createChunkIfDoesntExist(curvec * CHUNK_SIZE);
+		chunks[getChunkIndex(curvec * CHUNK_SIZE)]->loadChunk(file);
+	}
+	
 }
