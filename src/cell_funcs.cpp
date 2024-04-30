@@ -146,7 +146,11 @@ void updateFire(Chunk* chunk, vec3 curr_pos) {
 	// if there is anything to burn in adjacent cells, chance to burn and spread
 	// otherwise, chance to burn out
 	if (burnable.size() == 0 && isAbovePercentage(0.9)) {
-		chunk->setCell(curr_pos, cell{ AIR_COLOR, AIR });
+		if (isAbovePercentage(0.35)) {
+			chunk->setCell(curr_pos, cell{ SMOKE_COLOR, SMOKE });
+		} else {
+			chunk->setCell(curr_pos, cell{ AIR_COLOR, AIR });
+		}
 	}
 	else {
 		for (int i = 0; i < burnable.size(); i++) {
