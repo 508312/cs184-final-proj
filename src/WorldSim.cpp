@@ -2,7 +2,9 @@
 #include <glad/glad.h>
 
 #include <CGL/vector3D.h>
+#include "CGL/vector3D.h"
 #include <iostream>
+#include "CGL/matrix3x3.h"
 #include <nanogui/nanogui.h>
 #include <utility>
 
@@ -17,6 +19,13 @@
 // Needed to generate stb_image binaries. Should only define in exactly one source file importing stb_image.h.
 #define STB_IMAGE_IMPLEMENTATION
 #include "misc/stb_image.h"
+using std::cout;
+using std::endl;
+using std::max;
+using std::min;
+using std::ifstream;
+using std::ofstream;
+using namespace CGL;
 
 WorldSim::WorldSim(std::string project_root, Screen* screen) {
 	this->screen = screen;
@@ -50,6 +59,7 @@ void WorldSim::init() {
     CGL::Vector3D c_dir(0., 0., 0.);
 
     canonical_view_distance = 2.0f * 0.9;
+    max_falling_speed = 800.0f;
     scroll_rate = canonical_view_distance / 1.3;
     min_scroll_distance = canonical_view_distance*2;
     max_scroll_distance = canonical_view_distance*20;
@@ -120,6 +130,14 @@ void WorldSim::initShader() {
     shaderCursor.initFromFiles("cursor", project_root + "\\shaders\\cursor.vert", project_root + "\\shaders\\cursor.frag");
 }
 
+void WorldSim::mousePositionToWorld() {
+    auto transformation_matrix = camera.getC2W();
+    double mousex, mousey = mouse_x, mouse_y;
+    const Vector3D& world_mouse = mousex * transformation_matrix[0] + mousey * transformation_matrix[1];
+    vec3 world_mouse_Vec3 = vec3(world_mouse.x, world_mouse.y, world_mouse.z);
+    auto chunk = world->getChunkIndex(world_mouse_Vec3);
+
+}
 
 Matrix4f WorldSim::getProjectionMatrix() {
 	Matrix4f perspective;
@@ -178,6 +196,7 @@ bool WorldSim::cursorPosCallbackEvent(double x, double y) {
         else {
             mouseLeftDragged(x, y);
         }
+
     }
     else if (!left_down && !middle_down && right_down) {
         mouseRightDragged(x, y);
@@ -191,7 +210,6 @@ bool WorldSim::cursorPosCallbackEvent(double x, double y) {
 
     return true;
 }
-
 bool WorldSim::mouseButtonCallbackEvent(int button, int action,
     int modifiers) {
     switch (action) {
@@ -358,7 +376,12 @@ bool WorldSim::keyCallbackEvent(int key, int scancode, int action,
         case 'C':
             draw_cursor = !draw_cursor;
             break;
+        case 'l':
+        case 'L':
+            camera_falling = !camera_falling;
+            break;
         }
+        
     }
 
     if (action == GLFW_RELEASE) {
@@ -949,6 +972,20 @@ void WorldSim::simulate() {
         */
         updateWorld();
     }
+    if (camera_falling) {
+        vec3 camera_position = vec3d2vec3(camera.position());
+        auto cur_chunk = world->getChunkAtBlock(camera_position);
+        if (cur_chunk->getCell(camera_position + vec3(0, -1, 0)).type != AIR) {
+            falling_speed = 0.0f;
+        }
+        camera.move_by(0, -min(falling_speed, max_falling_speed), canonical_view_distance);
+        falling_speed += falling_acceleration;
+        //check if intersects something
+    }
+}
+
+inline vec3 WorldSim::vec3d2vec3(Vector3D vec3D) {
+    return vec3(vec3D.x, vec3D.y, vec3D.z);
 }
 
 inline std::vector<mesh*> WorldSim::getChunkMeshes() {
