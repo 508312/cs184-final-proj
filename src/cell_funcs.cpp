@@ -241,7 +241,13 @@ void updateGrass(Chunk* chunk, vec3 curr_pos) {
 		}
 		// set top grass block to special TOPGRASS type, indicates it's the end of a grass blade
 		// and prevents further growth at later ticks
-		chunk->setCell(curr_pos + vec3(0, grow_length - 1, 0), cell{ TOPGRASS_COLOR, TOPGRASS });
+		if (isAbovePercentage(0.8)) {
+			// flower
+			chunk->setCell(curr_pos + vec3(0, grow_length - 1, 0), cell{ TOPGRASSFLOWER_COLOR, TOPGRASS });
+		}
+		else {
+			chunk->setCell(curr_pos + vec3(0, grow_length - 1, 0), cell{ TOPGRASS_COLOR, TOPGRASS });
+		}
 		// spread to nearby plantable blocks
 		for (int i = 0; i < sizeof(dirs) / sizeof(vec3); i++) {
 			if (isAbovePercentage(0.94) 
@@ -250,6 +256,7 @@ void updateGrass(Chunk* chunk, vec3 curr_pos) {
 				chunk->setCell(curr_pos + dirs[i] + 1, cell{ GRASS_COLOR, GRASS });
 			}
 		}
+		// volatile update
 	}
 	// otherwise die
 	else {

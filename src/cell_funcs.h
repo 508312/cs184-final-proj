@@ -16,6 +16,7 @@ inline uint8_t getRandom(uint8_t from, uint8_t to) {
 #define SNOW_COLOR {getRandom(250, 255), getRandom(250, 255), getRandom(250, 255), 255}
 #define GRASS_COLOR {getRandom(10, 50), getRandom(110, 150), getRandom(5, 20), 255}
 #define TOPGRASS_COLOR {getRandom(10, 50), getRandom(110, 150), getRandom(5, 20), 255}
+#define TOPGRASSFLOWER_COLOR {getRandom(60, 255), getRandom(20, 50), getRandom(80, 255), 255}
 #define WOOD_COLOR {getRandom(70, 90), getRandom(50, 70), getRandom(30, 50), 255}
 #define STEAM_COLOR {getRandom(120, 136), getRandom(120, 136), getRandom(120, 136), 50}
 #define SMOKE_COLOR {getRandom(60, 80), getRandom(60, 80), getRandom(60, 80), 255}
