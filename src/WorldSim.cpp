@@ -74,13 +74,11 @@ void WorldSim::init() {
 
     world = new World();
 
-    color black = color{ 0, 0, 0, 255 };
-    color sand = color{ 255, 255, 0, 255 };
     // floor 
     for (int x = 0; x < 100; x++) {
         for (int z = 0; z < 100; z++) {
             world->spawnCell(vec3(x, 0, z), cell{ SAND_COLOR, SAND });
-            world->spawnCell(vec3(x, -1, z), cell{ SAND_COLOR, WALL });
+            world->spawnCell(vec3(x, -1, z), cell{ WALL_COLOR, WALL });
         }
     }
 
@@ -88,15 +86,15 @@ void WorldSim::init() {
         for (int y = 20; y < 25; y++) {
             for (int z = 20; z < 25; z++) {
                 world->spawnCell(vec3(x, y, z), cell{ WATER_COLOR, WATER });
-                //world->spawnCell(vec3(x, -1, z), cell{ SAND_COLOR, WALL });
+                //world->spawnCell(vec3(x, -1, z), cell{ WALL_COLOR, WALL });
             }
         }
     }
 
     world->spawnCell(vec3(3, 3, 3), cell{ SAND_COLOR, SAND });
     world->spawnCell(vec3(6, 6, 6), cell{ SAND_COLOR, SAND });
-    world->spawnCell(vec3(1, 3, 1), cell{ sand, SAND });
-    world->spawnCell(vec3(1, 6, 1), cell{ sand, SAND });
+    world->spawnCell(vec3(1, 3, 1), cell{ SAND_COLOR, SAND });
+    world->spawnCell(vec3(1, 6, 1), cell{ SAND_COLOR, SAND });
 
 
     for (int y = 7; y < CHUNK_SIZE; y++) {
@@ -252,7 +250,7 @@ void WorldSim::mouseLeftDragged(double x, double y) {
     
     //int dx = mouse_x - x;
     //int dy = mouse_y - y;
-    //world->spawnCell(vec3(dx, dy, spawn_distance), cell{ color{ 0, 0, 0, 0 }, WATER });
+    //world->spawnCell(vec3(dx, dy, spawn_distance), cell{ WATER_COLOR, WATER });
 
 }
 
@@ -732,8 +730,8 @@ void WorldSim::simulate() {
     }
     if (!is_paused) {
         /*
-        world->spawnCell(vec3(3, 10, 3), cell{ color{ 0, 0, 0, 0 }, SAND });
-        world->spawnCell(vec3(10, 10, 3), cell{ color{ 0, 0, 0, 0 }, WATER });
+        world->spawnCell(vec3(3, 10, 3), cell{ SAND_COLOR, SAND });
+        world->spawnCell(vec3(10, 10, 3), cell{ WATER_COLOR, WATER });
         */
         updateWorld();
     }

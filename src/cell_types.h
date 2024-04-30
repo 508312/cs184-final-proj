@@ -12,7 +12,8 @@ CELL(AIR, PROPERTY_EMPTY, updateAir) \
 CELL(SAND, PROPERTY_EMPTY | PROPERTY_BURNABLE, updateSand) \
 CELL(WATER, PROPERTY_EMPTY, updateWater) \
 CELL(FIRE, PROPERTY_EMPTY, updateFire) \
-CELL(STEAM, PROPERTY_EMPTY, updateSteam)
+CELL(STEAM, PROPERTY_EMPTY, updateSteam) \
+CELL(SMOKE, PROPERTY_EMPTY, updateSmoke)
 
 #define CELL(m, p, f) m,
 enum CellType {
