@@ -18,8 +18,8 @@ Chunk::Chunk(World* wp, vec3 chunk_index) {
     // air
     reset();
 
-    bbox_to = vec3(0, 0, 0);
-    bbox_from = vec3(CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE);
+    bbox_from = vec3(0, 0, 0);
+    bbox_to = vec3(CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE);
 
     dirty_cells.reset();
 }
