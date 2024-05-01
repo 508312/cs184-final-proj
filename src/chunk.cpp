@@ -177,6 +177,9 @@ void Chunk::loadChunk(std::ifstream& file) {
     for (int i = 0; i < CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE; i++) {
         file >> cells[i];
     }
+    bbox_from = vec3(0, 0, 0);
+    bbox_to = vec3(CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE);
+    dirty_cells.reset();
 }
 
 void Chunk::reset() {
