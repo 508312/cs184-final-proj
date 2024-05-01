@@ -88,36 +88,25 @@ void WorldSim::init() {
     // floor 
     for (int x = 0; x < 250; x++) {
         for (int z = 0; z < 250; z++) {
-            world->spawnCell(vec3(x, 0, z), cell{ SAND_COLOR, SAND });
             world->spawnCell(vec3(x, -1, z), cell{ WALL_COLOR, WALL });
         }
     }
 
-    for (int x = 20; x < 25; x++) {
-        for (int y = 20; y < 25; y++) {
-            for (int z = 20; z < 25; z++) {
-                world->spawnCell(vec3(x, y, z), cell{ WATER_COLOR, WATER });
-                //world->spawnCell(vec3(x, -1, z), cell{ WALL_COLOR, WALL });
-            }
-        }
-    }
+    world->spawnCell(vec3(10, 10, 10), cell{ FIRE_COLOR, FIRE });
+    world->spawnCell(vec3(16, 10, 10), cell{ FIRE_COLOR, FIRE });
 
-    world->spawnCell(vec3(3, 3, 3), cell{ SAND_COLOR, SAND });
-    world->spawnCell(vec3(6, 6, 6), cell{ SAND_COLOR, SAND });
-    world->spawnCell(vec3(1, 3, 1), cell{ SAND_COLOR, SAND });
-    world->spawnCell(vec3(1, 6, 1), cell{ SAND_COLOR, SAND });
-
-
-    for (int y = 7; y < CHUNK_SIZE; y++) {
-        world->spawnCell(vec3(1, y, 1), cell{ SAND_COLOR, SAND });
-        world->spawnCell(vec3(2, y, 5), cell{ SAND_COLOR, SAND });
-        world->spawnCell(vec3(2, y, 6), cell{ SAND_COLOR, SAND });
-    }
-
-    for (int y = 7; y < CHUNK_SIZE; y++) {
-        world->spawnCell(vec3(7, y, 7), cell{ WOOD_COLOR, WOOD });
-        world->spawnCell(vec3(8, y, 8), cell{ SNOW_COLOR, SNOW });
-    }
+    world->spawnCell(vec3(8, 8, 10), cell{ GRASS_COLOR, GRASS });
+    world->spawnCell(vec3(9, 7, 10), cell{ GRASS_COLOR, GRASS });
+    world->spawnCell(vec3(10, 6, 10), cell{ GRASS_COLOR, GRASS });
+    world->spawnCell(vec3(11, 6, 10), cell{ GRASS_COLOR, GRASS });
+    world->spawnCell(vec3(12, 5, 10), cell{ GRASS_COLOR, GRASS });
+    world->spawnCell(vec3(13, 5, 10), cell{ GRASS_COLOR, GRASS });
+    world->spawnCell(vec3(14, 5, 10), cell{ GRASS_COLOR, GRASS });
+    world->spawnCell(vec3(15, 6, 10), cell{ GRASS_COLOR, GRASS });
+    world->spawnCell(vec3(16, 6, 10), cell{ GRASS_COLOR, GRASS });
+    world->spawnCell(vec3(17, 7, 10), cell{ GRASS_COLOR, GRASS });
+    world->spawnCell(vec3(18, 8, 10), cell{ GRASS_COLOR, GRASS });
+    
 
     std::vector<Chunk*> chunks = world->getChunks();
     pushChunks(chunks);
@@ -1040,7 +1029,7 @@ void WorldSim::drawContents() {
      
     
     
-    if (true) {
+    if (draw_cursor) {
         MatrixXf lookpos(4, 0);
         MatrixXf lookcol(4, 0);
         color red = { 255, 0, 0 , 255 };
