@@ -86,6 +86,25 @@ void WorldSim::init() {
     world = new World();
 
     world->loadWorld(project_root + "demo");
+    /*
+    * in case needed
+    std::unordered_map<int, cell> allcells;
+    for (int x = -1; x < 200; x++) {
+        for (int y = -1; y < 200; y++) {
+            for (int z = -1; z < 200; z++) {
+                allcells[x + y * 300 + z * 300 * 300] = world->getCell(vec3(x, y, z));
+            }
+        }
+    }
+
+    for (int x = -1; x < 200; x++) {
+        for (int y = -1; y < 200; y++) {
+            for (int z = -1; z < 200; z++) {
+                world->setCell(vec3(x, y + 1, z), allcells[x + y * 300 + z * 300 * 300]);
+            }
+        }
+    }
+    */
 
 
     std::vector<Chunk*> chunks = world->getChunks();
@@ -945,7 +964,7 @@ void WorldSim::simulate() {
     }
     if (s_held) {
         camera.move_by(0, 0, move_constant, canonical_view_distance);
-    }
+    }                                                   
     if (d_held) {
         camera.move_by(move_constant, 0, canonical_view_distance);
     }
