@@ -34,6 +34,7 @@ class Chunk {
 		vec3 getBboxFrom() { return bbox_from; }
 		vec3 getBboxTo() { return bbox_to; }
 
+		bool isOnlyAir();
 		void resetDirty();
 		void dumpChunk(std::ofstream& file);
 		void loadChunk(std::ifstream& file);

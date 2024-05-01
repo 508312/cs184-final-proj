@@ -89,6 +89,9 @@ void World::dumpWorld(std::string filename) {
 	file << chunks.size() << "\n";
 	for (Chunk* ch: chunks) {
 		//std::cout << "from get " << ch->getChunkPos().x << " " << ch->getChunkPos().y << " " << ch->getChunkPos().z << std::endl;
+		if (ch->isOnlyAir()) {
+			continue;
+		}
 		ch->dumpChunk(file);
 		file << std::endl;
 	}

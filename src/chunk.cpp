@@ -74,6 +74,20 @@ cell& Chunk::getCell(vec3 pos) {
     return cells[getIndex(pos)];
 }
 
+bool Chunk::isOnlyAir() {
+    for (int x = 0; x < CHUNK_SIZE; x++) {
+        for (int y = 0; y < CHUNK_SIZE; y++) {
+            for (int z = 0; z < CHUNK_SIZE; z++) {
+                if (getCell(vec3(x, y, z)).type != AIR) {
+                    return false;
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
 void Chunk::spawnCell(vec3 pos, cell cell) {
     if (pos[0] < 0 || pos[0] >= CHUNK_SIZE ||
         pos[1] < 0 || pos[1] >= CHUNK_SIZE ||
