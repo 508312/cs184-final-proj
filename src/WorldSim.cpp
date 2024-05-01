@@ -86,38 +86,27 @@ void WorldSim::init() {
     world = new World();
 
     // floor 
-    for (int x = 0; x < 250; x++) {
-        for (int z = 0; z < 250; z++) {
-            world->spawnCell(vec3(x, 0, z), cell{ SAND_COLOR, SAND });
+    for (int x = 0; x < 100; x++) {
+        for (int z = 0; z < 100; z++) {
             world->spawnCell(vec3(x, -1, z), cell{ WALL_COLOR, WALL });
         }
     }
 
-    for (int x = 20; x < 25; x++) {
-        for (int y = 20; y < 25; y++) {
-            for (int z = 20; z < 25; z++) {
-                world->spawnCell(vec3(x, y, z), cell{ WATER_COLOR, WATER });
-                //world->spawnCell(vec3(x, -1, z), cell{ WALL_COLOR, WALL });
-            }
+    for (int x = 0; x < 100; x++) {
+        for (int y = 0; y < 4; y++) {
+            world->setCell(vec3(x, y, 0), cell{ WALL_COLOR, WALL });
+            world->setCell(vec3(x, y, 100), cell{ WALL_COLOR, WALL });
         }
     }
 
-    world->spawnCell(vec3(3, 3, 3), cell{ SAND_COLOR, SAND });
-    world->spawnCell(vec3(6, 6, 6), cell{ SAND_COLOR, SAND });
-    world->spawnCell(vec3(1, 3, 1), cell{ SAND_COLOR, SAND });
-    world->spawnCell(vec3(1, 6, 1), cell{ SAND_COLOR, SAND });
-
-
-    for (int y = 7; y < CHUNK_SIZE; y++) {
-        world->spawnCell(vec3(1, y, 1), cell{ SAND_COLOR, SAND });
-        world->spawnCell(vec3(2, y, 5), cell{ SAND_COLOR, SAND });
-        world->spawnCell(vec3(2, y, 6), cell{ SAND_COLOR, SAND });
+    for (int z = 0; z < 100; z++) {
+        for (int y = 0; y < 4; y++) {
+            world->setCell(vec3(0, y, z), cell{ WALL_COLOR, WALL });
+            world->setCell(vec3(100, y, z), cell{WALL_COLOR, WALL});
+        }
     }
+    world->loadWorld(project_root + "demo");
 
-    for (int y = 7; y < CHUNK_SIZE; y++) {
-        world->spawnCell(vec3(7, y, 7), cell{ WOOD_COLOR, WOOD });
-        world->spawnCell(vec3(8, y, 8), cell{ SNOW_COLOR, SNOW });
-    }
 
     std::vector<Chunk*> chunks = world->getChunks();
     pushChunks(chunks);
@@ -964,10 +953,6 @@ void WorldSim::simulate() {
         camera.move_by(0, 250, canonical_view_distance);
     }
     if (!is_paused) {
-        /*
-        world->spawnCell(vec3(3, 10, 3), cell{ SAND_COLOR, SAND });
-        world->spawnCell(vec3(10, 10, 3), cell{ WATER_COLOR, WATER });
-        */
         updateWorld();
     }
     if (camera_falling) {
