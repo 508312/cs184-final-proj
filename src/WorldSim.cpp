@@ -901,10 +901,10 @@ void WorldSim::pushChunk(Chunk* chunk, mesh& mesh) {
 }
 
 inline void WorldSim::pushChunks(std::vector<Chunk*>& chunks) {
-    SimpleTimer t;
-    t.start();
+    //SimpleTimer t;
+    //t.start();
 
-    std::cout << "pushing " << chunks.size() << std::endl;
+    //std::cout << "pushing " << chunks.size() << std::endl;
     for (Chunk* chunk : chunks) {
         if (chunk_meshes.count(world->getChunkIndex(chunk->getChunkPos() * CHUNK_SIZE)) == 0) {
             mesh& mesh = chunk_meshes[world->getChunkIndex(chunk->getChunkPos() * CHUNK_SIZE)];
@@ -928,7 +928,7 @@ inline void WorldSim::pushChunks(std::vector<Chunk*>& chunks) {
         pushChunk(chunk, mesh);
     }
 
-    std::cout << "push of chunks took " << t.get() << std::endl;
+    //std::cout << "push of chunks took " << t.get() << std::endl;
 }
 
 void WorldSim::updateWorld() {
