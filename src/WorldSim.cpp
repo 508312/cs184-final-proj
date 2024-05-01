@@ -15,6 +15,7 @@
 
 #include "WorldSim.h"
 #include "cubeFaceEnum.h"
+#include "timer.h"
 
 // Needed to generate stb_image binaries. Should only define in exactly one source file importing stb_image.h.
 #define STB_IMAGE_IMPLEMENTATION
@@ -25,7 +26,6 @@ using std::max;
 using std::min;
 using std::ifstream;
 using std::ofstream;
-using namespace CGL;
 
 WorldSim::WorldSim(std::string project_root, Screen* screen) {
 	this->screen = screen;
@@ -549,14 +549,17 @@ void WorldSim::initGUI(Screen* screen) {
     }
 }
 
-void WorldSim::pushFacePoint(MatrixXf& positions, MatrixXf& colors, MatrixXf& orientation,
+void WorldSim::pushFacePoint(MatrixXf& positions, MatrixXf& colors, MatrixXf& orientation, int& size, int& idx,
     vec3 pos,
     CUBE_FACE face,
     color& color) {
-    positions.conservativeResize(Eigen::NoChange, positions.cols() + Eigen::Index(1));
-    colors.conservativeResize(Eigen::NoChange, colors.cols() + Eigen::Index(1));
-    orientation.conservativeResize(Eigen::NoChange, orientation.cols() + Eigen::Index(1));
-    int idx = positions.cols() - 1;
+    if (idx == size) {
+        positions.conservativeResize(Eigen::NoChange, positions.cols() + Eigen::Index(5));
+        colors.conservativeResize(Eigen::NoChange, colors.cols() + Eigen::Index(5));
+        orientation.conservativeResize(Eigen::NoChange, orientation.cols() + Eigen::Index(5));
+        size += 5;
+    }
+
     float dx = 0.0;
     float dy = 0.0;
     float dz = 0.0;
@@ -658,6 +661,8 @@ void WorldSim::pushFacePoint(MatrixXf& positions, MatrixXf& colors, MatrixXf& or
     float b = color.b / 255.0 * coeff;
     float a = color.a / 255.0;
     colors.col(idx) << r, g, b, a;
+
+    idx += 1;
 }
 
 void WorldSim::pushFace(MatrixXf& positions, MatrixXf& colors,
@@ -791,7 +796,8 @@ void WorldSim::pushFace(MatrixXf& positions, MatrixXf& colors,
     colors.col((idx + 1) * 3 + 2) << r, g, b, a;
 }
 
-inline void WorldSim::pushChunkCubePoint(MatrixXf& positions, MatrixXf& colors, MatrixXf& orientation, Chunk* chunk, vec3 posInChunk) {
+inline void WorldSim::pushChunkCubePoint(MatrixXf& positions, MatrixXf& colors, MatrixXf& orientation,
+    int& size, int& idx, Chunk* chunk, vec3 posInChunk) {
     if (chunk->getCell(posInChunk).color.a == 0) {
         return;
     }
@@ -805,17 +811,17 @@ inline void WorldSim::pushChunkCubePoint(MatrixXf& positions, MatrixXf& colors, 
     cell& backwardNeighbor = chunk->getCell(posInChunk + vec3(0, 0, -1));
 
     if (leftNeighbor.color.a != 255 && leftNeighbor.type != self.type)
-        pushFacePoint(positions, colors, orientation, pos, LEFT, self.color);
+        pushFacePoint(positions, colors, orientation, size, idx, pos, LEFT, self.color);
     if (botNeighbor.color.a != 255 && botNeighbor.type != self.type)
-        pushFacePoint(positions, colors, orientation, pos, BOT, self.color);
+        pushFacePoint(positions, colors, orientation, size, idx, pos, BOT, self.color);
     if (forwardNeighbor.color.a != 255 && forwardNeighbor.type != self.type)
-        pushFacePoint(positions, colors, orientation, pos, FORWARD, self.color);
+        pushFacePoint(positions, colors, orientation, size, idx, pos, FORWARD, self.color);
     if (topNeighbor.color.a != 255 && topNeighbor.type != self.type)
-        pushFacePoint(positions, colors, orientation, pos, TOP, self.color);
+        pushFacePoint(positions, colors, orientation, size, idx, pos, TOP, self.color);
     if (rightNeighbor.color.a != 255 && rightNeighbor.type != self.type)
-        pushFacePoint(positions, colors, orientation, pos, RIGHT, self.color);
+        pushFacePoint(positions, colors, orientation, size, idx, pos, RIGHT, self.color);
     if (backwardNeighbor.color.a != 255 && backwardNeighbor.type != self.type)
-        pushFacePoint(positions, colors, orientation, pos, BACKWARD, self.color);
+        pushFacePoint(positions, colors, orientation, size, idx, pos, BACKWARD, self.color);
 }
 
 
@@ -884,9 +890,9 @@ void WorldSim::pushChunk(Chunk* chunk, mesh& mesh) {
                 //    pushCube(positions, colors, chunk->getChunkPos() * CHUNK_SIZE + vec3(x, y, z), chunk->getCell(vec3(x, y, z)).color);
                 //}
                 if (chunk->getCell(vec3(x, y, z)).color.a == 255) {
-                    pushChunkCubePoint(mesh.positions, mesh.colors, mesh.orientation, chunk, vec3(x, y, z));
+                    pushChunkCubePoint(mesh.positions, mesh.colors, mesh.orientation, mesh.size, mesh.ind, chunk, vec3(x, y, z));
                 } else {
-                    pushChunkCubePoint(mesh.positions_transparent, mesh.colors_transparent, mesh.orientation_transparent, chunk, vec3(x, y, z));
+                    pushChunkCubePoint(mesh.positions_transparent, mesh.colors_transparent, mesh.orientation_transparent, mesh.size_t, mesh.ind_t, chunk, vec3(x, y, z));
                 }
                 
             }
@@ -895,17 +901,34 @@ void WorldSim::pushChunk(Chunk* chunk, mesh& mesh) {
 }
 
 inline void WorldSim::pushChunks(std::vector<Chunk*>& chunks) {
-    for (Chunk* chunk : chunks) {
-        mesh& mesh = chunk_meshes[world->getChunkIndex(chunk->getChunkPos() * CHUNK_SIZE)];
-        mesh.positions = MatrixXf(4, 0);
-        mesh.orientation = MatrixXf(4, 0);
-        mesh.colors = MatrixXf(4, 0);
+    SimpleTimer t;
+    t.start();
 
-        mesh.positions_transparent = MatrixXf(4, 0);
-        mesh.orientation_transparent = MatrixXf(4, 0);
-        mesh.colors_transparent = MatrixXf(4, 0);
+    std::cout << "pushing " << chunks.size() << std::endl;
+    for (Chunk* chunk : chunks) {
+        if (chunk_meshes.count(world->getChunkIndex(chunk->getChunkPos() * CHUNK_SIZE)) == 0) {
+            mesh& mesh = chunk_meshes[world->getChunkIndex(chunk->getChunkPos() * CHUNK_SIZE)];
+            mesh.positions = MatrixXf(4, 0);
+            mesh.orientation = MatrixXf(4, 0);
+            mesh.colors = MatrixXf(4, 0);
+            mesh.size = 0;
+            mesh.ind = 0;
+
+            mesh.positions_transparent = MatrixXf(4, 0);
+            mesh.orientation_transparent = MatrixXf(4, 0);
+            mesh.colors_transparent = MatrixXf(4, 0);
+            mesh.size_t = 0;
+            mesh.ind_t = 0;
+        }
+
+        mesh& mesh = chunk_meshes[world->getChunkIndex(chunk->getChunkPos() * CHUNK_SIZE)];
+        mesh.ind = 0;
+
+        mesh.ind_t = 0;
         pushChunk(chunk, mesh);
     }
+
+    std::cout << "push of chunks took " << t.get() << std::endl;
 }
 
 void WorldSim::updateWorld() {
@@ -982,6 +1005,10 @@ void WorldSim::drawContents() {
         if (mesh->positions.cols() == 0) {
             continue;
         }
+        mesh->size = mesh->ind;
+        mesh->colors.conservativeResize(Eigen::NoChange, mesh->size);
+        mesh->positions.conservativeResize(Eigen::NoChange, mesh->size);
+        mesh->orientation.conservativeResize(Eigen::NoChange, mesh->size);
         shader.uploadAttrib("in_position", mesh->positions, false);
         shader.uploadAttrib("in_orientations", mesh->orientation, false);
         shader.uploadAttrib("in_colors", mesh->colors, false);
@@ -996,6 +1023,10 @@ void WorldSim::drawContents() {
         if (mesh->positions_transparent.cols() == 0) {
             continue;
         }
+        mesh->size_t = mesh->ind_t;
+        mesh->colors_transparent.conservativeResize(Eigen::NoChange, mesh->size_t);
+        mesh->positions_transparent.conservativeResize(Eigen::NoChange, mesh->size_t);
+        mesh->orientation_transparent.conservativeResize(Eigen::NoChange, mesh->size_t);
         shader.uploadAttrib("in_position", mesh->positions_transparent, false);
         shader.uploadAttrib("in_orientations", mesh->orientation_transparent, false);
         shader.uploadAttrib("in_colors", mesh->colors_transparent, false);

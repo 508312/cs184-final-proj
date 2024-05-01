@@ -1,20 +1,20 @@
 #include "Timer.h"
 
-Timer::Timer()
+SimpleTimer::SimpleTimer()
 {
     //ctor
 }
 
-Timer::~Timer()
+SimpleTimer::~SimpleTimer()
 {
     //dtor
 }
 
-void Timer::start() {
+void SimpleTimer::start() {
     startT = std::chrono::steady_clock::now();
 }
 
-int Timer::get() {
+int SimpleTimer::get() {
     std::chrono::time_point<std::chrono::steady_clock> endT = std::chrono::steady_clock::now();
 
     std::chrono::microseconds diff = std::chrono::duration_cast<std::chrono::microseconds>(endT - startT);
