@@ -65,7 +65,7 @@ std::vector<Chunk*> World::update() {
 	for (auto entry = chunks.begin(); entry != chunks.end(); entry++) {
 		Chunk* chunk = entry->second;
 		if (chunk->needsUpdate()) {
-			if (chunk->getChunkPos().y == -10) {
+			if (chunk->getChunkPos().y == -2) {
 				chunk->reset();
 			}
 			chunk->update();
@@ -101,7 +101,6 @@ void World::loadWorld(std::string filename) {
 	file >> len;
 	for (int i = 0; i < len; i++) {
 		file >> curvec.x >> curvec.y >> curvec.z;
-		std::cout << "world load " << curvec.x << " " << curvec.y << " " << curvec.z << std::endl;
 		createChunkIfDoesntExist(curvec * CHUNK_SIZE);
 		chunks[getChunkIndex(curvec * CHUNK_SIZE)]->loadChunk(file);
 	}
