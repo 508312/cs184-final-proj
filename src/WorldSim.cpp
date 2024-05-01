@@ -1005,7 +1005,7 @@ void WorldSim::drawContents() {
      
     
     
-    if (true) {
+    if (draw_cursor) {
         MatrixXf lookpos(4, 0);
         MatrixXf lookcol(4, 0);
         color red = { 255, 0, 0 , 255 };
