@@ -982,6 +982,7 @@ void WorldSim::simulate() {
         auto cur_chunk = world->getChunkAtBlock(camera_position);
         if (cur_chunk != NULL && cur_chunk->getCell(camera_position + vec3(0, -1, 0)).type != AIR) {
             falling_speed = 0.0f;
+            camera_falling = false;
         }
         camera.move_by(0, -min(falling_speed, max_falling_speed), canonical_view_distance);
         falling_speed += falling_acceleration;
