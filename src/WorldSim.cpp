@@ -85,26 +85,6 @@ void WorldSim::init() {
 
     world = new World();
 
-    // floor 
-    for (int x = 0; x < 100; x++) {
-        for (int z = 0; z < 100; z++) {
-            world->spawnCell(vec3(x, -1, z), cell{ WALL_COLOR, WALL });
-        }
-    }
-
-    for (int x = 0; x < 100; x++) {
-        for (int y = 0; y < 4; y++) {
-            world->setCell(vec3(x, y, 0), cell{ WALL_COLOR, WALL });
-            world->setCell(vec3(x, y, 100), cell{ WALL_COLOR, WALL });
-        }
-    }
-
-    for (int z = 0; z < 100; z++) {
-        for (int y = 0; y < 4; y++) {
-            world->setCell(vec3(0, y, z), cell{ WALL_COLOR, WALL });
-            world->setCell(vec3(100, y, z), cell{WALL_COLOR, WALL});
-        }
-    }
     world->loadWorld(project_root + "demo");
 
 
