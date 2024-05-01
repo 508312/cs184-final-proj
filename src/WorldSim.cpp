@@ -968,6 +968,9 @@ void WorldSim::simulate() {
         */
         updateWorld();
     }
+    if (left_down) {
+        mousePositionToWorld();
+    }
     if (camera_falling) {
         vec3 camera_position = vec3d2vec3(camera.position());
         auto cur_chunk = world->getChunkAtBlock(camera_position);
