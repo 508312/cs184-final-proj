@@ -83,6 +83,8 @@ private:
 	// File management
 	std::string project_root;
 
+	vec3 Vector3dtovec3(Vector3D vector3d);
+
 	// Camera methods
 	virtual Matrix4f getProjectionMatrix();
 	virtual Matrix4f getViewMatrix();

@@ -124,10 +124,19 @@ void WorldSim::mousePositionToWorld() {
     double mousex, mousey = mouse_x, mouse_y;
     const Vector3D& world_mouse = mousex * transformation_matrix[0] + mousey * transformation_matrix[1];
     vec3 world_mouse_Vec3 = vec3(world_mouse.x, world_mouse.y, world_mouse.z);
-    auto chunk = world->getChunkIndex(world_mouse_Vec3);
-
+    auto chunk = world->getChunkAtBlock(world_mouse_Vec3);
+    auto spawn_pos = world_mouse_Vec3 - Vector3dtovec3(camera.for_dir());
+    std::vector<Chunk*> updated_chunk;
+    if (chunk != NULL && chunk->getCell(spawn_pos).type == AIR) {
+        world->spawnCell(spawn_pos, cell{ get_curr_color(), curr_type });
+        updated_chunk.push_back(world->getChunkAtBlock(spawn_pos));
+    }
+    pushChunks(updated_chunk);
 }
 
+vec3 WorldSim::Vector3dtovec3(Vector3D vector3d) {
+    return vec3(vector3d.x, vector3d.y, vector3d.z);
+}
 Matrix4f WorldSim::getProjectionMatrix() {
 	Matrix4f perspective;
 	perspective.setZero();
