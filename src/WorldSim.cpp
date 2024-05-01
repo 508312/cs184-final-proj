@@ -86,8 +86,8 @@ void WorldSim::init() {
     world = new World();
 
     world->loadWorld(project_root + "demo");
+    
     /*
-    * in case needed
     std::unordered_map<int, cell> allcells;
     for (int x = -1; x < 200; x++) {
         for (int y = -1; y < 200; y++) {
@@ -103,8 +103,8 @@ void WorldSim::init() {
                 world->setCell(vec3(x, y + 1, z), allcells[x + y * 300 + z * 300 * 300]);
             }
         }
-    }
-    */
+    }   */
+    
 
 
     std::vector<Chunk*> chunks = world->getChunks();

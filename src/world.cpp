@@ -86,7 +86,16 @@ std::vector<Chunk*> World::update() {
 void World::dumpWorld(std::string filename) {
 	std::ofstream file(filename);
 	std::vector<Chunk*> chunks = getChunks();
-	file << chunks.size() << "\n";
+
+	int empty = 0;
+	for (Chunk* ch : chunks) {
+		if (ch->isOnlyAir()) {
+			empty++;
+		}
+	}
+	
+
+	file << chunks.size() - empty << "\n";
 	for (Chunk* ch: chunks) {
 		//std::cout << "from get " << ch->getChunkPos().x << " " << ch->getChunkPos().y << " " << ch->getChunkPos().z << std::endl;
 		if (ch->isOnlyAir()) {
