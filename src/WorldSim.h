@@ -87,6 +87,11 @@ private:
 	// File management
 	std::string project_root;
 
+
+	void alternateToSpawnerType();
+
+	void alternateToRegularType();
+
 	// Camera methods
 	virtual Matrix4f getProjectionMatrix();
 	virtual Matrix4f getViewMatrix();
@@ -147,6 +152,7 @@ private:
 	bool w_held = false;
 	bool a_held = false;
 	bool s_held = false;
+	bool spawn_spawner = false;
 	bool d_held = false;
 	bool shift_held = false;
 	double falling_speed = 0.0f, falling_acceleration = 50.0f;

@@ -14,6 +14,48 @@ void updateError(Chunk* chunk, vec3 pos) {
 	//std::cout << "UPDATING ELEMENT WHICH YOU SHOULD NOT " << std::endl;
 	return;
 }
+void updateSandSpawner(Chunk *chunk, vec3 pos) {
+	chunk->setCell(pos, cell{ SPAWNER_COLOR, SAND_SPAWNER });
+	chunk->setCell(pos + vec3(0, -1, 0), cell{SAND_COLOR, SAND});
+}
+
+void updateWaterSpawner(Chunk* chunk, vec3 pos) {
+	chunk->setCell(pos, cell{ SPAWNER_COLOR, WATER_SPAWNER });
+	chunk->setCell(pos + vec3(0, -1, 0), cell{ WATER_COLOR, WATER });
+}
+void updateFireSpawner(Chunk* chunk, vec3 pos) {
+	chunk->setCell(pos, cell{ SPAWNER_COLOR, FIRE_SPAWNER });
+	chunk->setCell(pos + vec3(0, -1, 0), cell{ FIRE_COLOR, FIRE });
+}
+
+void updateSnowSpawner(Chunk* chunk, vec3 pos) {
+	chunk->setCell(pos, cell{ SPAWNER_COLOR, SNOW_SPAWNER });
+	chunk->setCell(pos + vec3(0, -1, 0), cell{ SNOW_COLOR, SNOW });
+}
+void updateGrassSpawner(Chunk* chunk, vec3 pos) {
+	chunk->setCell(pos, cell{ SPAWNER_COLOR, GRASS_SPAWNER });
+	chunk->setCell(pos + vec3(0, -1, 0), cell{ GRASS_COLOR, GRASS });
+}
+void updateWoodSpawner(Chunk* chunk, vec3 pos) {
+	chunk->setCell(pos, cell{ SPAWNER_COLOR, WOOD_SPAWNER });
+	chunk->setCell(pos + vec3(0, -1, 0), cell{ WOOD_COLOR, WOOD });
+}
+
+void updateSmokeSpawner(Chunk* chunk, vec3 pos)
+{
+	chunk->setCell(pos, cell{ SPAWNER_COLOR, SMOKE_SPAWNER });
+	chunk->setCell(pos + vec3(0, -1, 0), cell{ SMOKE_COLOR, SMOKE });
+}
+
+void updateSteamSpawner(Chunk* chunk, vec3 pos)
+{
+	chunk->setCell(pos, cell{ SPAWNER_COLOR, STEAM_SPAWNER });
+	chunk->setCell(pos + vec3(0, -1, 0), cell{ STEAM_COLOR, STEAM });
+}
+
+
+
+
 
 void updateAir(Chunk* chunk, vec3 pos) {
 	return;

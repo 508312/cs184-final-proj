@@ -20,6 +20,7 @@ inline uint8_t getRandom(uint8_t from, uint8_t to) {
 #define WOOD_COLOR {getRandom(70, 90), getRandom(50, 70), getRandom(30, 50), 255}
 #define STEAM_COLOR {getRandom(120, 136), getRandom(120, 136), getRandom(120, 136), 50}
 #define SMOKE_COLOR {getRandom(60, 80), getRandom(60, 80), getRandom(60, 80), 255}
+#define SPAWNER_COLOR {getRandom(150, 180), getRandom(60, 80), getRandom(200, 255), 255}
 
 #define GET_COLOR_FUNC(CLR) []() {return color CLR; }
 
@@ -33,6 +34,14 @@ extern void updateFire(Chunk* cunk, vec3 pos);
 extern void updateSnow(Chunk* cunk, vec3 pos);
 extern void updateGrass(Chunk* cunk, vec3 pos);
 extern void updateSteam(Chunk* cunk, vec3 pos);
+extern void updateSandSpawner(Chunk* chunk, vec3 pos);
+extern void updateWaterSpawner(Chunk* chunk, vec3 pos);
+extern void updateFireSpawner(Chunk* cunk, vec3 pos);
+extern void updateSnowSpawner(Chunk* cunk, vec3 pos);
+extern void updateGrassSpawner(Chunk* cunk, vec3 pos);
+extern void updateWoodSpawner(Chunk* cunk, vec3 pos);
+extern void updateSmokeSpawner(Chunk* cunk, vec3 pos);
+extern void updateSteamSpawner(Chunk* cunk, vec3 pos);
 extern void updateSmoke(Chunk* cunk, vec3 pos);
 extern void updateTopGrass(Chunk* chunk, vec3 curr_pos);
 extern void doNothing(Chunk* cunk, vec3 pos);
