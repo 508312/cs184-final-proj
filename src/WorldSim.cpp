@@ -129,7 +129,7 @@ void WorldSim::mousePositionToWorld() {
 
 void WorldSim::alternateToSpawnerType() {
     if (spawn_spawner) {
-        return;
+        std::cout << "Something is wrong";
     }
     get_curr_color = GET_COLOR_FUNC(SPAWNER_COLOR);
     switch (curr_type) {
@@ -157,13 +157,19 @@ void WorldSim::alternateToSpawnerType() {
         case STEAM:
             curr_type = STEAM_SPAWNER;
             break;
+        case LAVA:
+            curr_type = LAVA_SPAWNER;
+            break;
+        case WALL:
+            curr_type = STONE_SPAWNER;
+            break;
     }
     spawn_spawner = true;
 }
 
 void WorldSim::alternateToRegularType() {
     if (!spawn_spawner) {
-        return;
+        std::cout << "Something is wrong";
     }
     switch (curr_type) {
     case GRASS_SPAWNER:
@@ -198,6 +204,13 @@ void WorldSim::alternateToRegularType() {
         curr_type = STEAM;
         get_curr_color = GET_COLOR_FUNC(STEAM_COLOR);
         break;
+    case LAVA_SPAWNER:
+        curr_type = LAVA;
+        get_curr_color = GET_COLOR_FUNC(LAVA_COLOR);
+        break;
+    case STONE_SPAWNER:
+        curr_type = WALL;
+        get_curr_color = GET_COLOR_FUNC(WALL_COLOR);
     }
     spawn_spawner = false;
 }
@@ -621,12 +634,27 @@ void WorldSim::initGUI(Screen* screen) {
                 curr_type = WOOD_SPAWNER;
             }
             });
-
+        b = new Button(window, "lava");
+        b->setFlags(Button::RadioButton);
+        b->setCallback([this]() {
+            if (!spawn_spawner) {
+                curr_type = LAVA;
+                get_curr_color = GET_COLOR_FUNC(LAVA_COLOR);
+            }
+            else {
+                curr_type = LAVA_SPAWNER;
+            }
+        });
         b = new Button(window, "stone");
         b->setFlags(Button::RadioButton);
         b->setCallback([this]() {
-            curr_type = WALL;
-            get_curr_color = GET_COLOR_FUNC(WALL_COLOR);
+            if (!spawn_spawner) {
+                curr_type = WALL;
+                get_curr_color = GET_COLOR_FUNC(WALL_COLOR);
+            }
+            else {
+                curr_type = STONE_SPAWNER;
+            }
             });
 
         b = new Button(window, "steam");
