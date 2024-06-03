@@ -64,8 +64,11 @@ std::vector<Chunk*> World::update() {
 	newly_created.clear();
 	for (auto entry = chunks.begin(); entry != chunks.end(); entry++) {
 		Chunk* chunk = entry->second;
+		if (chunk == NULL) {
+			continue;
+		}
 		if (chunk->needsUpdate()) {
-			if (chunk->getChunkPos().y == -10) {
+			if (chunk->getChunkPos().y == -2) {
 				chunk->reset();
 			}
 			chunk->update();
@@ -86,9 +89,21 @@ std::vector<Chunk*> World::update() {
 void World::dumpWorld(std::string filename) {
 	std::ofstream file(filename);
 	std::vector<Chunk*> chunks = getChunks();
-	file << chunks.size() << "\n";
+
+	int empty = 0;
+	for (Chunk* ch : chunks) {
+		if (ch->isOnlyAir()) {
+			empty++;
+		}
+	}
+	
+
+	file << chunks.size() - empty << "\n";
 	for (Chunk* ch: chunks) {
 		//std::cout << "from get " << ch->getChunkPos().x << " " << ch->getChunkPos().y << " " << ch->getChunkPos().z << std::endl;
+		if (ch->isOnlyAir()) {
+			continue;
+		}
 		ch->dumpChunk(file);
 		file << std::endl;
 	}
@@ -101,7 +116,6 @@ void World::loadWorld(std::string filename) {
 	file >> len;
 	for (int i = 0; i < len; i++) {
 		file >> curvec.x >> curvec.y >> curvec.z;
-		std::cout << "world load " << curvec.x << " " << curvec.y << " " << curvec.z << std::endl;
 		createChunkIfDoesntExist(curvec * CHUNK_SIZE);
 		chunks[getChunkIndex(curvec * CHUNK_SIZE)]->loadChunk(file);
 	}

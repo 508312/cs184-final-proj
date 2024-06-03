@@ -13,6 +13,7 @@ set(CLOTHSIM_VIEWER_SOURCE
     chunk.cpp
     cell_funcs.cpp
     world.cpp
+    timer.cpp
 
     misc/file_utils.cpp
 )

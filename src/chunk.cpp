@@ -18,8 +18,8 @@ Chunk::Chunk(World* wp, vec3 chunk_index) {
     // air
     reset();
 
-    bbox_to = vec3(0, 0, 0);
-    bbox_from = vec3(CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE);
+    bbox_from = vec3(0, 0, 0);
+    bbox_to = vec3(CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE);
 
     dirty_cells.reset();
 }
@@ -72,6 +72,20 @@ cell& Chunk::getCell(vec3 pos) {
     }
 
     return cells[getIndex(pos)];
+}
+
+bool Chunk::isOnlyAir() {
+    for (int x = 0; x < CHUNK_SIZE; x++) {
+        for (int y = 0; y < CHUNK_SIZE; y++) {
+            for (int z = 0; z < CHUNK_SIZE; z++) {
+                if (getCell(vec3(x, y, z)).type != AIR) {
+                    return false;
+                }
+            }
+        }
+    }
+
+    return true;
 }
 
 void Chunk::spawnCell(vec3 pos, cell cell) {
@@ -163,6 +177,9 @@ void Chunk::loadChunk(std::ifstream& file) {
     for (int i = 0; i < CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE; i++) {
         file >> cells[i];
     }
+    bbox_from = vec3(0, 0, 0);
+    bbox_to = vec3(CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE);
+    dirty_cells.reset();
 }
 
 void Chunk::reset() {

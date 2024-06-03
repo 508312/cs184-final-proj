@@ -2,11 +2,11 @@
 #define TIMER_H
 #include <chrono>
 
-class Timer
+class SimpleTimer
 {
 public:
-    Timer();
-    virtual ~Timer();
+    SimpleTimer();
+    virtual ~SimpleTimer();
     void start();
     int get();
 

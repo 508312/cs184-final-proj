@@ -15,6 +15,7 @@
 
 #include "WorldSim.h"
 #include "cubeFaceEnum.h"
+#include "timer.h"
 
 // Needed to generate stb_image binaries. Should only define in exactly one source file importing stb_image.h.
 #define STB_IMAGE_IMPLEMENTATION
@@ -25,7 +26,6 @@ using std::max;
 using std::min;
 using std::ifstream;
 using std::ofstream;
-using namespace CGL;
 
 WorldSim::WorldSim(std::string project_root, Screen* screen) {
 	this->screen = screen;
@@ -85,28 +85,27 @@ void WorldSim::init() {
 
     world = new World();
 
-    // floor 
-    for (int x = 0; x < 250; x++) {
-        for (int z = 0; z < 250; z++) {
-            world->spawnCell(vec3(x, -1, z), cell{ WALL_COLOR, WALL });
+    world->loadWorld(project_root + "demo");
+    
+    /*
+    std::unordered_map<int, cell> allcells;
+    for (int x = -1; x < 200; x++) {
+        for (int y = -1; y < 200; y++) {
+            for (int z = -1; z < 200; z++) {
+                allcells[x + y * 300 + z * 300 * 300] = world->getCell(vec3(x, y, z));
+            }
         }
     }
 
-    world->spawnCell(vec3(10, 10, 10), cell{ FIRE_COLOR, FIRE });
-    world->spawnCell(vec3(16, 10, 10), cell{ FIRE_COLOR, FIRE });
-
-    world->spawnCell(vec3(8, 8, 10), cell{ GRASS_COLOR, GRASS });
-    world->spawnCell(vec3(9, 7, 10), cell{ GRASS_COLOR, GRASS });
-    world->spawnCell(vec3(10, 6, 10), cell{ GRASS_COLOR, GRASS });
-    world->spawnCell(vec3(11, 6, 10), cell{ GRASS_COLOR, GRASS });
-    world->spawnCell(vec3(12, 5, 10), cell{ GRASS_COLOR, GRASS });
-    world->spawnCell(vec3(13, 5, 10), cell{ GRASS_COLOR, GRASS });
-    world->spawnCell(vec3(14, 5, 10), cell{ GRASS_COLOR, GRASS });
-    world->spawnCell(vec3(15, 6, 10), cell{ GRASS_COLOR, GRASS });
-    world->spawnCell(vec3(16, 6, 10), cell{ GRASS_COLOR, GRASS });
-    world->spawnCell(vec3(17, 7, 10), cell{ GRASS_COLOR, GRASS });
-    world->spawnCell(vec3(18, 8, 10), cell{ GRASS_COLOR, GRASS });
+    for (int x = -1; x < 200; x++) {
+        for (int y = -1; y < 200; y++) {
+            for (int z = -1; z < 200; z++) {
+                world->setCell(vec3(x, y + 1, z), allcells[x + y * 300 + z * 300 * 300]);
+            }
+        }
+    }   */
     
+
 
     std::vector<Chunk*> chunks = world->getChunks();
     pushChunks(chunks);
@@ -136,6 +135,94 @@ void WorldSim::mousePositionToWorld() {
 
 vec3 WorldSim::Vector3dtovec3(Vector3D vector3d) {
     return vec3(vector3d.x, vector3d.y, vector3d.z);
+}
+
+void WorldSim::alternateToSpawnerType() {
+    if (spawn_spawner) {
+        std::cout << "Something is wrong";
+    }
+    get_curr_color = GET_COLOR_FUNC(SPAWNER_COLOR);
+    switch (curr_type) {
+        case GRASS:
+            curr_type = GRASS_SPAWNER;
+            break;
+        case SAND:
+            curr_type = SAND_SPAWNER;
+            break;
+        case WATER:
+            curr_type = WATER_SPAWNER;
+            break;
+        case FIRE:
+            curr_type = FIRE_SPAWNER;
+            break;
+        case SNOW:
+            curr_type = SNOW_SPAWNER;
+            break;
+        case WOOD:
+            curr_type = WOOD_SPAWNER;
+            break;
+        case SMOKE:
+            curr_type = SMOKE_SPAWNER;
+            break;
+        case STEAM:
+            curr_type = STEAM_SPAWNER;
+            break;
+        case LAVA:
+            curr_type = LAVA_SPAWNER;
+            break;
+        case WALL:
+            curr_type = STONE_SPAWNER;
+            break;
+    }
+    spawn_spawner = true;
+}
+
+void WorldSim::alternateToRegularType() {
+    if (!spawn_spawner) {
+        std::cout << "Something is wrong";
+    }
+    switch (curr_type) {
+    case GRASS_SPAWNER:
+        curr_type = GRASS;
+        get_curr_color = GET_COLOR_FUNC(GRASS_COLOR);
+        break;
+    case SAND_SPAWNER:
+        curr_type = SAND;
+        get_curr_color = GET_COLOR_FUNC(SAND_COLOR);
+        break;
+    case WATER_SPAWNER:
+        curr_type = WATER;
+        get_curr_color = GET_COLOR_FUNC(WATER_COLOR);
+        break;
+    case FIRE_SPAWNER:
+        curr_type = FIRE;
+        get_curr_color = GET_COLOR_FUNC(FIRE_COLOR);
+        break;
+    case SNOW_SPAWNER:
+        curr_type = SNOW;
+        get_curr_color = GET_COLOR_FUNC(SNOW_COLOR);
+        break;
+    case WOOD_SPAWNER:
+        curr_type = WOOD;
+        get_curr_color = GET_COLOR_FUNC(WOOD_COLOR);
+        break;
+    case SMOKE_SPAWNER:
+        curr_type = SMOKE;
+        get_curr_color = GET_COLOR_FUNC(SMOKE_COLOR);
+        break;
+    case STEAM_SPAWNER:
+        curr_type = STEAM;
+        get_curr_color = GET_COLOR_FUNC(STEAM_COLOR);
+        break;
+    case LAVA_SPAWNER:
+        curr_type = LAVA;
+        get_curr_color = GET_COLOR_FUNC(LAVA_COLOR);
+        break;
+    case STONE_SPAWNER:
+        curr_type = WALL;
+        get_curr_color = GET_COLOR_FUNC(WALL_COLOR);
+    }
+    spawn_spawner = false;
 }
 Matrix4f WorldSim::getProjectionMatrix() {
 	Matrix4f perspective;
@@ -444,11 +531,17 @@ void WorldSim::resetCamera() { camera.copy_placement(canonicalCamera); }
 
 void WorldSim::initGUI(Screen* screen) {
     Window* window;
+    auto param = screen->size();
 
     window = new Window(screen, "Simulation");
     window->setPosition(Vector2i(default_window_size(0) - 245, 15));
-    window->setLayout(new GroupLayout(15, 6, 14, 5));
-    new Label(window, "Reset World", "sans-bold");
+    window->setSize(Vector2i(150, param.y()));
+    // Using GroupLayout with custom spacing to influence the height of widgets
+    int margin = 0; // Margin between widgets
+    int spacing = 0; // Spacing between widgets, reducing this reduces the vertical space
+    window->setLayout(new GroupLayout(margin, margin, spacing, margin));
+
+    new Label(window, "Reset World", "sans");
     {
         Button* b = new Button(window, "reset-world");
         b->setFlags(Button::NormalButton);
@@ -456,70 +549,146 @@ void WorldSim::initGUI(Screen* screen) {
             init();
             });
     }
-    new Label(window, "Material Types", "sans-bold");
+    new Label(window, "Spawn Spawners", "sans");
+    {
+        Button* toggleButton = new Button(window, "OFF");
+        toggleButton->setFlags(Button::ToggleButton);
+        toggleButton->setChangeCallback([this,toggleButton](bool state) {
+            if (state) {
+                toggleButton->setCaption("ON");
+                // Code to execute when the switch is turned ON
+                alternateToSpawnerType();
+                this->spawn_spawner = true;
+                this->alternateToSpawnerType();
+            }
+            else {
+                toggleButton->setCaption("OFF");
+                // Code to execute when the switch is turned OFF
+                this->spawn_spawner = false;
+                this->alternateToRegularType();
+            }
+            });
+    }
+
+    new Label(window, "Material Types", "sans");
 
     {
         Button* b = new Button(window, "sand");
         b->setFlags(Button::RadioButton);
         b->setCallback([this]() {
-            curr_type = SAND;
-            get_curr_color = GET_COLOR_FUNC(SAND_COLOR);
+            if ( ! spawn_spawner) {
+                curr_type = SAND;
+                get_curr_color = GET_COLOR_FUNC(SAND_COLOR);
+            }
+            else {
+                curr_type = SAND_SPAWNER;
+            }
             });
 
         b = new Button(window, "water");
         b->setFlags(Button::RadioButton);
         b->setCallback([this]() {
-            curr_type = WATER;
-            get_curr_color = GET_COLOR_FUNC(WATER_COLOR);
+            if (!spawn_spawner) {
+                curr_type = WATER;
+                get_curr_color = GET_COLOR_FUNC(WATER_COLOR);
+            }
+            else {
+                curr_type = WATER_SPAWNER;
+            }
             });
 
         b = new Button(window, "fire");
         b->setFlags(Button::RadioButton);
         b->setCallback([this]() {
-            curr_type = FIRE;
-            get_curr_color = GET_COLOR_FUNC(FIRE_COLOR);
+            if (!spawn_spawner) {
+                curr_type = FIRE;
+                get_curr_color = GET_COLOR_FUNC(FIRE_COLOR);
+            }
+            else {
+                curr_type = FIRE_SPAWNER;
+            }
             });
 
         b = new Button(window, "snow");
         b->setFlags(Button::RadioButton);
         b->setCallback([this]() {
-            curr_type = SNOW;
-            get_curr_color = GET_COLOR_FUNC(SNOW_COLOR);
+            if (!spawn_spawner) {
+                curr_type = SNOW;
+                get_curr_color = GET_COLOR_FUNC(SNOW_COLOR);
+            }
+            else {
+                curr_type = SNOW_SPAWNER;
+            }
             });
 
         b = new Button(window, "grass");
         b->setFlags(Button::RadioButton);
         b->setCallback([this]() {
-            curr_type = GRASS;
-            get_curr_color = GET_COLOR_FUNC(GRASS_COLOR);
+            if (!spawn_spawner) {
+                curr_type = GRASS;
+                get_curr_color = GET_COLOR_FUNC(GRASS_COLOR);
+            }
+            else {
+                curr_type = GRASS_SPAWNER;
+            }
             });
 
         b = new Button(window, "wood");
         b->setFlags(Button::RadioButton);
         b->setCallback([this]() {
-            curr_type = WOOD;
-            get_curr_color = GET_COLOR_FUNC(WOOD_COLOR);
+            if (!spawn_spawner) {
+                curr_type = WOOD;
+                get_curr_color = GET_COLOR_FUNC(WOOD_COLOR);
+            }
+            else {
+                curr_type = WOOD_SPAWNER;
+            }
             });
-
+        b = new Button(window, "lava");
+        b->setFlags(Button::RadioButton);
+        b->setCallback([this]() {
+            if (!spawn_spawner) {
+                curr_type = LAVA;
+                get_curr_color = GET_COLOR_FUNC(LAVA_COLOR);
+            }
+            else {
+                curr_type = LAVA_SPAWNER;
+            }
+        });
         b = new Button(window, "stone");
         b->setFlags(Button::RadioButton);
         b->setCallback([this]() {
-            curr_type = WALL;
-            get_curr_color = GET_COLOR_FUNC(WALL_COLOR);
+            if (!spawn_spawner) {
+                curr_type = WALL;
+                get_curr_color = GET_COLOR_FUNC(WALL_COLOR);
+            }
+            else {
+                curr_type = STONE_SPAWNER;
+            }
             });
 
         b = new Button(window, "steam");
         b->setFlags(Button::RadioButton);
         b->setCallback([this]() {
-            curr_type = STEAM;
-            get_curr_color = GET_COLOR_FUNC(STEAM_COLOR);
+            if (!spawn_spawner) {
+                curr_type = STEAM;
+                get_curr_color = GET_COLOR_FUNC(STEAM_COLOR);
+            }
+            else {
+                curr_type = STEAM_SPAWNER;
+            }
             });
 
         b = new Button(window, "smoke");
         b->setFlags(Button::RadioButton);
         b->setCallback([this]() {
-            curr_type = SMOKE;
-            get_curr_color = GET_COLOR_FUNC(SMOKE_COLOR);
+            if (!spawn_spawner) {
+                curr_type = SMOKE;
+                get_curr_color = GET_COLOR_FUNC(SMOKE_COLOR);
+            }
+            else {
+                curr_type = SMOKE_SPAWNER;
+            }
             });
 
         b = new Button(window, "delete");
@@ -530,7 +699,7 @@ void WorldSim::initGUI(Screen* screen) {
             });
     }
 
-    new Label(window, "Brush Size", "sans-bold");
+    new Label(window, "Brush Size", "sans");
 
     {
         Widget* panel = new Widget(window);
@@ -555,7 +724,7 @@ void WorldSim::initGUI(Screen* screen) {
             });
     }
 
-    new Label(window, "Filename", "sans-bold");
+    new Label(window, "Filename", "sans");
 
     {
         TextBox* filename = new TextBox(window);
@@ -578,14 +747,17 @@ void WorldSim::initGUI(Screen* screen) {
     }
 }
 
-void WorldSim::pushFacePoint(MatrixXf& positions, MatrixXf& colors, MatrixXf& orientation,
+void WorldSim::pushFacePoint(MatrixXf& positions, MatrixXf& colors, MatrixXf& orientation, int& size, int& idx,
     vec3 pos,
     CUBE_FACE face,
     color& color) {
-    positions.conservativeResize(Eigen::NoChange, positions.cols() + Eigen::Index(1));
-    colors.conservativeResize(Eigen::NoChange, colors.cols() + Eigen::Index(1));
-    orientation.conservativeResize(Eigen::NoChange, orientation.cols() + Eigen::Index(1));
-    int idx = positions.cols() - 1;
+    if (idx == size) {
+        positions.conservativeResize(Eigen::NoChange, positions.cols() + Eigen::Index(5));
+        colors.conservativeResize(Eigen::NoChange, colors.cols() + Eigen::Index(5));
+        orientation.conservativeResize(Eigen::NoChange, orientation.cols() + Eigen::Index(5));
+        size += 5;
+    }
+
     float dx = 0.0;
     float dy = 0.0;
     float dz = 0.0;
@@ -687,6 +859,8 @@ void WorldSim::pushFacePoint(MatrixXf& positions, MatrixXf& colors, MatrixXf& or
     float b = color.b / 255.0 * coeff;
     float a = color.a / 255.0;
     colors.col(idx) << r, g, b, a;
+
+    idx += 1;
 }
 
 void WorldSim::pushFace(MatrixXf& positions, MatrixXf& colors,
@@ -820,7 +994,8 @@ void WorldSim::pushFace(MatrixXf& positions, MatrixXf& colors,
     colors.col((idx + 1) * 3 + 2) << r, g, b, a;
 }
 
-inline void WorldSim::pushChunkCubePoint(MatrixXf& positions, MatrixXf& colors, MatrixXf& orientation, Chunk* chunk, vec3 posInChunk) {
+inline void WorldSim::pushChunkCubePoint(MatrixXf& positions, MatrixXf& colors, MatrixXf& orientation,
+    int& size, int& idx, Chunk* chunk, vec3 posInChunk) {
     if (chunk->getCell(posInChunk).color.a == 0) {
         return;
     }
@@ -834,17 +1009,17 @@ inline void WorldSim::pushChunkCubePoint(MatrixXf& positions, MatrixXf& colors, 
     cell& backwardNeighbor = chunk->getCell(posInChunk + vec3(0, 0, -1));
 
     if (leftNeighbor.color.a != 255 && leftNeighbor.type != self.type)
-        pushFacePoint(positions, colors, orientation, pos, LEFT, self.color);
+        pushFacePoint(positions, colors, orientation, size, idx, pos, LEFT, self.color);
     if (botNeighbor.color.a != 255 && botNeighbor.type != self.type)
-        pushFacePoint(positions, colors, orientation, pos, BOT, self.color);
+        pushFacePoint(positions, colors, orientation, size, idx, pos, BOT, self.color);
     if (forwardNeighbor.color.a != 255 && forwardNeighbor.type != self.type)
-        pushFacePoint(positions, colors, orientation, pos, FORWARD, self.color);
-    if (topNeighbor.color.a != 255 && topNeighbor.type != self.type)
-        pushFacePoint(positions, colors, orientation, pos, TOP, self.color);
+        pushFacePoint(positions, colors, orientation, size, idx, pos, FORWARD, self.color);
+        if (topNeighbor.color.a != 255 && topNeighbor.type != self.type)
+        pushFacePoint(positions, colors, orientation, size, idx, pos, TOP, self.color);
     if (rightNeighbor.color.a != 255 && rightNeighbor.type != self.type)
-        pushFacePoint(positions, colors, orientation, pos, RIGHT, self.color);
+        pushFacePoint(positions, colors, orientation, size, idx, pos, RIGHT, self.color);
     if (backwardNeighbor.color.a != 255 && backwardNeighbor.type != self.type)
-        pushFacePoint(positions, colors, orientation, pos, BACKWARD, self.color);
+        pushFacePoint(positions, colors, orientation, size, idx, pos, BACKWARD, self.color);
 }
 
 
@@ -913,9 +1088,9 @@ void WorldSim::pushChunk(Chunk* chunk, mesh& mesh) {
                 //    pushCube(positions, colors, chunk->getChunkPos() * CHUNK_SIZE + vec3(x, y, z), chunk->getCell(vec3(x, y, z)).color);
                 //}
                 if (chunk->getCell(vec3(x, y, z)).color.a == 255) {
-                    pushChunkCubePoint(mesh.positions, mesh.colors, mesh.orientation, chunk, vec3(x, y, z));
+                    pushChunkCubePoint(mesh.positions, mesh.colors, mesh.orientation, mesh.size, mesh.ind, chunk, vec3(x, y, z));
                 } else {
-                    pushChunkCubePoint(mesh.positions_transparent, mesh.colors_transparent, mesh.orientation_transparent, chunk, vec3(x, y, z));
+                    pushChunkCubePoint(mesh.positions_transparent, mesh.colors_transparent, mesh.orientation_transparent, mesh.size_t, mesh.ind_t, chunk, vec3(x, y, z));
                 }
                 
             }
@@ -924,17 +1099,34 @@ void WorldSim::pushChunk(Chunk* chunk, mesh& mesh) {
 }
 
 inline void WorldSim::pushChunks(std::vector<Chunk*>& chunks) {
-    for (Chunk* chunk : chunks) {
-        mesh& mesh = chunk_meshes[world->getChunkIndex(chunk->getChunkPos() * CHUNK_SIZE)];
-        mesh.positions = MatrixXf(4, 0);
-        mesh.orientation = MatrixXf(4, 0);
-        mesh.colors = MatrixXf(4, 0);
+    //SimpleTimer t;
+    //t.start();
 
-        mesh.positions_transparent = MatrixXf(4, 0);
-        mesh.orientation_transparent = MatrixXf(4, 0);
-        mesh.colors_transparent = MatrixXf(4, 0);
+    //std::cout << "pushing " << chunks.size() << std::endl;
+    for (Chunk* chunk : chunks) {
+        if (chunk_meshes.count(world->getChunkIndex(chunk->getChunkPos() * CHUNK_SIZE)) == 0) {
+            mesh& mesh = chunk_meshes[world->getChunkIndex(chunk->getChunkPos() * CHUNK_SIZE)];
+            mesh.positions = MatrixXf(4, 0);
+            mesh.orientation = MatrixXf(4, 0);
+            mesh.colors = MatrixXf(4, 0);
+            mesh.size = 0;
+            mesh.ind = 0;
+
+            mesh.positions_transparent = MatrixXf(4, 0);
+            mesh.orientation_transparent = MatrixXf(4, 0);
+            mesh.colors_transparent = MatrixXf(4, 0);
+            mesh.size_t = 0;
+            mesh.ind_t = 0;
+        }
+
+        mesh& mesh = chunk_meshes[world->getChunkIndex(chunk->getChunkPos() * CHUNK_SIZE)];
+        mesh.ind = 0;
+
+        mesh.ind_t = 0;
         pushChunk(chunk, mesh);
     }
+
+    //std::cout << "push of chunks took " << t.get() << std::endl;
 }
 
 void WorldSim::updateWorld() {
@@ -951,7 +1143,7 @@ void WorldSim::simulate() {
     }
     if (s_held) {
         camera.move_by(0, 0, move_constant, canonical_view_distance);
-    }
+    }                                                   
     if (d_held) {
         camera.move_by(move_constant, 0, canonical_view_distance);
     }
@@ -962,10 +1154,6 @@ void WorldSim::simulate() {
         camera.move_by(0, 250, canonical_view_distance);
     }
     if (!is_paused) {
-        /*
-        world->spawnCell(vec3(3, 10, 3), cell{ SAND_COLOR, SAND });
-        world->spawnCell(vec3(10, 10, 3), cell{ WATER_COLOR, WATER });
-        */
         updateWorld();
     }
     if (left_down) {
@@ -976,6 +1164,7 @@ void WorldSim::simulate() {
         auto cur_chunk = world->getChunkAtBlock(camera_position);
         if (cur_chunk != NULL && cur_chunk->getCell(camera_position + vec3(0, -1, 0)).type != AIR) {
             falling_speed = 0.0f;
+            camera_falling = false;
         }
         camera.move_by(0, -min(falling_speed, max_falling_speed), canonical_view_distance);
         falling_speed += falling_acceleration;
@@ -1018,6 +1207,10 @@ void WorldSim::drawContents() {
         if (mesh->positions.cols() == 0) {
             continue;
         }
+        mesh->size = mesh->ind;
+        mesh->colors.conservativeResize(Eigen::NoChange, mesh->size);
+        mesh->positions.conservativeResize(Eigen::NoChange, mesh->size);
+        mesh->orientation.conservativeResize(Eigen::NoChange, mesh->size);
         shader.uploadAttrib("in_position", mesh->positions, false);
         shader.uploadAttrib("in_orientations", mesh->orientation, false);
         shader.uploadAttrib("in_colors", mesh->colors, false);
@@ -1032,6 +1225,10 @@ void WorldSim::drawContents() {
         if (mesh->positions_transparent.cols() == 0) {
             continue;
         }
+        mesh->size_t = mesh->ind_t;
+        mesh->colors_transparent.conservativeResize(Eigen::NoChange, mesh->size_t);
+        mesh->positions_transparent.conservativeResize(Eigen::NoChange, mesh->size_t);
+        mesh->orientation_transparent.conservativeResize(Eigen::NoChange, mesh->size_t);
         shader.uploadAttrib("in_position", mesh->positions_transparent, false);
         shader.uploadAttrib("in_orientations", mesh->orientation_transparent, false);
         shader.uploadAttrib("in_colors", mesh->colors_transparent, false);

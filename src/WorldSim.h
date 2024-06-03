@@ -20,9 +20,13 @@ struct mesh {
 	MatrixXf positions;
 	MatrixXf positions_transparent;
 	MatrixXf orientation;
+	int size;
+	int ind;
 	MatrixXf colors;
 	MatrixXf colors_transparent;
 	MatrixXf orientation_transparent;
+	int size_t;
+	int ind_t;
 };
 
 class WorldSim {
@@ -48,8 +52,8 @@ public:
 
 	void pushCube(MatrixXf& positions, MatrixXf& colors, vec3 pos, color& color);
 	void pushFace(MatrixXf& positions, MatrixXf& colors, vec3 pos, CUBE_FACE face, color& color);
-	void pushFacePoint(MatrixXf& positions, MatrixXf& colors, MatrixXf& orientation, vec3 pos, CUBE_FACE face, color& color);
-	void pushChunkCubePoint(MatrixXf& positions, MatrixXf& colors, MatrixXf& orientation, Chunk* chunk, vec3 pos);
+	void pushFacePoint(MatrixXf& positions, MatrixXf& colors, MatrixXf& orientation, int& size, int& ind, vec3 pos, CUBE_FACE face, color& color);
+	void pushChunkCubePoint(MatrixXf& positions, MatrixXf& colors, MatrixXf& orientation, int& size, int& ind, Chunk* chunk, vec3 pos);
 	void pushChunkCube(MatrixXf& positions, MatrixXf& colors, Chunk* chunk, vec3 pos);
 
 	bool rotatable = false;
@@ -83,7 +87,10 @@ private:
 	// File management
 	std::string project_root;
 
-	vec3 Vector3dtovec3(Vector3D vector3d);
+
+	void alternateToSpawnerType();
+
+	void alternateToRegularType();
 
 	// Camera methods
 	virtual Matrix4f getProjectionMatrix();
@@ -145,6 +152,7 @@ private:
 	bool w_held = false;
 	bool a_held = false;
 	bool s_held = false;
+	bool spawn_spawner = false;
 	bool d_held = false;
 	bool shift_held = false;
 	double falling_speed = 0.0f, falling_acceleration = 50.0f;
