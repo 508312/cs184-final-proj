@@ -64,6 +64,7 @@ private:
 
 	std::vector<mesh*> getChunkMeshes();
 	vec3 vec3d2vec3(Vector3D vec3D);
+	vec3 Vector3dtovec3(Vector3D vector3d);
 	void updateWorld();
 	void pushChunks(std::vector<Chunk*>& chunks);
 

@@ -24,7 +24,7 @@ inline uint8_t getRandom(uint8_t from, uint8_t to) {
 #define LAVA_COLOR {getRandom(200, 255), getRandom(100, 150), getRandom(0, 50), 255}
 
 #define GET_COLOR_FUNC(CLR) []() {return color CLR; }
-#define CONSTANT_PROBABILITY_OF_FIRE 0.1
+#define CONSTANT_PROBABILITY_OF_FIRE 0.02//0.1
 
 class Chunk;
 

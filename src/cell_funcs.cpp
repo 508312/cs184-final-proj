@@ -145,6 +145,7 @@ void updateLava(Chunk* chunk, vec3 curr_pos) {
 							 vec3(-1, -1, 1),
 							 vec3(-1, -1, 0) };
 	if (chunk->getCell(curr_pos + vec3(0, -1, 0)).type == AIR) {
+		// LAVA FALLING
 		chunk->swapCells(curr_pos, curr_pos + vec3(0, -1, 0));
 	}
 	else {
@@ -152,17 +153,17 @@ void updateLava(Chunk* chunk, vec3 curr_pos) {
 		while (size != 0) {
 			//operating under assumption that order does not matter 
 			vec3 new_pos = curr_pos + get_random(size, dirs);
-			if (chunk->getCell(new_pos).type = AIR) {
+			if (chunk->getCell(new_pos).type == AIR) {
 				chunk->swapCells(curr_pos, new_pos);
 				break;
 			}
 		}
 	}
-	int size = sizeof(surroundings);
+	int size = sizeof(surroundings) / sizeof(vec3);
 	while (size != 0)
 	{
 		vec3 new_pos = curr_pos + get_random(size, surroundings);
-		if (chunk->getCell(new_pos).type = AIR) {
+		if (chunk->getCell(new_pos).type == AIR) {
 			std::mt19937 engine(std::random_device{}());
 			std::uniform_real_distribution<double> dist(0.0, 1.0);
 			double randomValue = dist(engine);
@@ -172,8 +173,6 @@ void updateLava(Chunk* chunk, vec3 curr_pos) {
 			break;
 		}
 	}
-
-
 }
 void updateWater(Chunk* chunk, vec3 curr_pos) {
 	vec3 dirs[] = { vec3(-1, -1, -1),
